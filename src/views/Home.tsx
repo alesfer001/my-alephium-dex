@@ -11,6 +11,7 @@ import TransactionSettings from "../components/Settings";
 import { useDispatch } from "react-redux"
 import { reset as resetSwapState } from "../state/swap/actions";
 import { reset as resetMintState } from "../state/mint/actions";
+import logo from "../../images/alephium-logo.png";
 
 const useStyles = makeStyles((theme) => ({
   spacer: {
@@ -44,6 +45,13 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     minHeight: "100vh",
   },
+  logo: {
+    cursor: "pointer",
+    transition: "transform 0.3s ease",
+    "&:hover": {
+      transform: "scale(1.1)",
+    },
+  },
 }));
 
 function Home() {
@@ -62,6 +70,11 @@ function Home() {
           <div className={classes.spacer} />
           <Hidden implementation="css" xsDown>
             <div style={{ display: "flex", alignItems: "center" }}>
+              <div className={classes.logo}>
+                <Link component={NavLink} to="/">
+                  <img src={logo} alt="Logo" width="50" height="50" />
+                </Link>
+              </div>
               <Link
                 component={NavLink}
                 to="/swap"
