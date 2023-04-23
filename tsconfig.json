@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "target": "es2020",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "noImplicitOverride": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "CommonJS",
+    "isolatedModules": true,
+    "downlevelIteration": true,
+    "noEmit": true,
+    "jsx": "react-jsx"
+  },
+  "exclude": ["node_modules"],
+  "include": ["**/*.ts", "**/*.tsx"]
+}
