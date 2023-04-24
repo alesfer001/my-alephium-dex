@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux"
 import { reset as resetSwapState } from "../state/swap/actions";
 import { reset as resetMintState } from "../state/mint/actions";
 import logo from "../../images/alephium-logo.png";
+import ExchangeInfo from "../components/ExchangeInfo";
 
 const useStyles = makeStyles((theme) => ({
   spacer: {
@@ -127,6 +128,7 @@ function Home() {
           </div>
         </Toolbar>
       </AppBar>
+      <ExchangeInfo />
       <Switch>
         <Route exact path="/swap">
           <Swap />
