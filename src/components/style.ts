@@ -4,11 +4,12 @@ import { COLORS } from "../muiTheme";
 export const commonStyles = makeStyles((theme) => ({
   numberField: {
     flexGrow: 1,
+    backgroundColor: "rgba(29, 31, 32, 0.5)",
     "& > * > .MuiInputBase-input": {
       textAlign: "right",
       height: "100%",
       flexGrow: "1",
-      fontSize: "1.5rem",
+      fontSize: "1rem",
       fontFamily: "Roboto Mono, monospace",
       caretShape: "block",
       width: "0",
@@ -24,12 +25,8 @@ export const commonStyles = makeStyles((theme) => ({
     },
   },
   tokenContainerWithBalance: {
-    minHeight: "44px",
     padding: ".2rem .8rem",
-    border: "3px solid #333333",
-    borderRadius: "10px",
     width: "initial",
-    height: "80px",
   },
   balance: {
     display: 'flex',
@@ -62,7 +59,7 @@ export const commonStyles = makeStyles((theme) => ({
     height: "1rem",
   },
   mainPaper: {
-    padding: "2rem",
+    padding: "1rem",
     backgroundColor: COLORS.nearBlackWithMinorTransparency,
   },
   titleBar: {

@@ -171,14 +171,13 @@ function Swap() {
         classes.gradientButton + (!readyToSwap ? " " + classes.disabled : "")
       }
     >
-      Swap
+      {wallet ? "Swap" : "Your wallet is not connected"}
     </ButtonWithLoader>
   );
 
   return (
     <Container className={classes.centeredContainer} maxWidth="sm">
-      <div className={classes.titleBar}></div>
-      <Typography variant="h4" color="textSecondary">
+      <Typography variant="h5" color="textSecondary">
         Swap
       </Typography>
       <div className={classes.spacer} />
@@ -193,15 +192,8 @@ function Swap() {
           buttonText="Swap More Coins"
           onClick={handleReset}
         />
-        {wallet === undefined ?
-          <div>
-            <Typography variant="h6" color="error" className={classes.error}>
-              Your wallet is not connected
-            </Typography>
-          </div> : null
-        }
         <div>
-          <Collapse in={!swapping && !completed && wallet !== undefined}>
+          <Collapse in={!swapping && !completed}>
             {
               <>
                 {sourceContent}
