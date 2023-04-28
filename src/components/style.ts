@@ -25,6 +25,18 @@ export const commonStyles = makeStyles((theme) => ({
       margin: "0",
     },
   },
+  inputWithMaxButton: {
+    display: "flex",
+    alignItems: "center",
+    width: "100%"
+  },
+  maxButton: {
+    marginLeft: theme.spacing(1),
+  },
+  hiddenButton: {
+    marginLeft: theme.spacing(1),
+    backgroundColor: "transparent !important"
+  },
   tokenContainerWithBalance: {
     padding: ".2rem .8rem",
     width: "initial",

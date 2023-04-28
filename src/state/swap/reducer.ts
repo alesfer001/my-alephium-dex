@@ -1,7 +1,6 @@
 import { TokenInfo } from '@alephium/token-list'
 import { createReducer } from '@reduxjs/toolkit'
 import { reset, selectTokenIn, selectTokenOut, switchTokens, typeInput } from './actions'
-import { TokenList } from "../../utils/dex";
 
 export interface SwapState {
   lastInput: 'TokenIn' | 'TokenOut' | undefined
@@ -13,8 +12,8 @@ export interface SwapState {
 const initialState: SwapState = {
   lastInput: undefined,
   inputValue: undefined,
-  tokenInInfo: TokenList[0],
-  tokenOutInfo: TokenList[1]
+  tokenInInfo: undefined,
+  tokenOutInfo: undefined
 }
 
 export default createReducer<SwapState>(initialState, (builder) =>

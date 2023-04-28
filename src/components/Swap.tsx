@@ -1,4 +1,4 @@
-import { Card, Container, Paper, Typography } from "@material-ui/core";
+import { Card, Container, Paper, Typography, Button } from "@material-ui/core";
 import Collapse from "@material-ui/core/Collapse";
 import { useCallback, useState, useMemo } from "react";
 import ButtonWithLoader from "./ButtonWithLoader";
@@ -19,6 +19,9 @@ import { TransactionSubmitted, WaitingForTxSubmission } from "./Transactions";
 import BigNumber from "bignumber.js";
 import { DetailItem } from "./DetailsItem";
 import TransactionSettings from "../components/Settings";
+import { TokenList } from "../utils/dex";
+import { useEffect } from 'react';
+
 
 function Swap() {
   const classes = commonStyles();
@@ -30,6 +33,10 @@ function Swap() {
   const [deadline,] = useDeadline()
   const wallet = useAlephiumWallet()
   const balance = useAvailableBalances()
+
+  useEffect(() => {
+      dispatch(selectTokenIn(TokenList[0]));
+  }, []);
 
   const handleTokenInChange = useCallback((tokenInfo) => {
     dispatch(selectTokenIn(tokenInfo))
@@ -86,6 +93,10 @@ function Swap() {
 
   const completed = useMemo(() => txId !== undefined, [txId])
 
+  const handleMaxButtonClick = () => {
+    dispatch(typeInput({ type: 'TokenIn', value: tokenInBalance ? tokenInBalance : '0' }))
+  };
+
   const sourceContent = (
     <div className={classes.tokenContainerWithBalance}>
       <div className={classes.inputRow}>
@@ -96,15 +107,25 @@ function Swap() {
           tokenBalances={balance}
           style2={true}
         />
-        <NumberTextField
-          className={classes.numberField}
-          value={tokenInInput !== undefined ? tokenInInput : ''}
-          onChange={handleTokenInAmountChange}
-          autoFocus={true}
-          InputProps={{ disableUnderline: true }}
-          disabled={!!swapping || !!completed}
-          placeholder="0"
-        />
+        <div className={classes.inputWithMaxButton}>
+          <NumberTextField
+            className={classes.numberField}
+            value={tokenInInput !== undefined ? tokenInInput : ''}
+            onChange={handleTokenInAmountChange}
+            autoFocus={true}
+            InputProps={{ disableUnderline: true }}
+            disabled={!!swapping || !!completed}
+            placeholder="0"
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.maxButton}
+            onClick={handleMaxButtonClick}
+          >
+            Max
+          </Button>
+        </div>
       </div>
       {tokenInBalance ?
         (<Typography className={classes.balance}>
@@ -122,14 +143,23 @@ function Swap() {
           onChange={handleTokenOutChange}
           tokenBalances={balance}
         />
-        <NumberTextField
-          className={classes.numberField}
-          value={tokenOutInput !== undefined ? tokenOutInput : ''}
-          onChange={handleTokenOutAmountChange}
-          InputProps={{ disableUnderline: true }}
-          disabled={!!swapping || !!completed}
-          placeholder="0"
-        />
+        <div className={classes.inputWithMaxButton}>
+          <NumberTextField
+            className={classes.numberField}
+            value={tokenOutInput !== undefined ? tokenOutInput : ''}
+            onChange={handleTokenOutAmountChange}
+            InputProps={{ disableUnderline: true }}
+            disabled={!!swapping || !!completed}
+            placeholder="0"
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            disabled
+            className={classes.hiddenButton}
+          >
+          </Button>
+        </div>
       </div>
       {tokenOutBalance ?
         (<Typography className={classes.balance}>
