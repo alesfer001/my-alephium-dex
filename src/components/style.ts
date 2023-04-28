@@ -6,13 +6,14 @@ export const commonStyles = makeStyles((theme) => ({
     flexGrow: 1,
     backgroundColor: "rgba(29, 31, 32, 0.5)",
     "& > * > .MuiInputBase-input": {
-      textAlign: "right",
+      textAlign: "left",
       height: "100%",
       flexGrow: "1",
-      fontSize: "1rem",
+      fontSize: ".8rem",
       fontFamily: "Roboto Mono, monospace",
       caretShape: "block",
       width: "0",
+      padding: theme.spacing(1),
       "&::-webkit-outer-spin-button, &::-webkit-inner-spin-button": {
         "-webkit-appearance": "none",
         "-moz-appearance": "none",
@@ -30,7 +31,9 @@ export const commonStyles = makeStyles((theme) => ({
   },
   balance: {
     display: 'flex',
-    padding: "0.1rem"
+    padding: "0.1rem",
+    justifyContent: 'flex-end',
+    fontSize: '.6rem'
   },
   inputRow: {
     display: "flex",
@@ -55,11 +58,20 @@ export const commonStyles = makeStyles((theme) => ({
     textAlign: "center",
     width: "100%",
   },
+  swapTitle: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    "& h5": {
+      textAlign: "center",
+      flexGrow: 1
+    }
+  },
   spacer: {
     height: "1rem",
   },
   mainPaper: {
-    padding: "1rem",
+    padding: "1.5rem",
     backgroundColor: COLORS.nearBlackWithMinorTransparency,
   },
   titleBar: {

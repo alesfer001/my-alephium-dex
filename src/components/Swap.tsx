@@ -18,6 +18,7 @@ import { commonStyles } from "./style";
 import { TransactionSubmitted, WaitingForTxSubmission } from "./Transactions";
 import BigNumber from "bignumber.js";
 import { DetailItem } from "./DetailsItem";
+import TransactionSettings from "../components/Settings";
 
 function Swap() {
   const classes = commonStyles();
@@ -102,11 +103,12 @@ function Swap() {
           autoFocus={true}
           InputProps={{ disableUnderline: true }}
           disabled={!!swapping || !!completed}
+          placeholder="0"
         />
       </div>
       {tokenInBalance ?
         (<Typography className={classes.balance}>
-          Balance: {tokenInBalance}
+          Balance: {tokenInBalance} {tokenInInfo?.symbol}
         </Typography>) : null}
     </div>
   );
@@ -126,11 +128,12 @@ function Swap() {
           onChange={handleTokenOutAmountChange}
           InputProps={{ disableUnderline: true }}
           disabled={!!swapping || !!completed}
+          placeholder="0"
         />
       </div>
       {tokenOutBalance ?
         (<Typography className={classes.balance}>
-          Balance: {tokenOutBalance}
+          Balance: {tokenOutBalance} {tokenOutInfo?.symbol}
         </Typography>) : null}
     </div>
   );
@@ -177,9 +180,12 @@ function Swap() {
 
   return (
     <Container className={classes.centeredContainer} maxWidth="sm">
-      <Typography variant="h5" color="textSecondary">
-        Swap
-      </Typography>
+      <div className={classes.swapTitle}>
+        <Typography variant="h5" color="textSecondary">
+          Swap
+        </Typography>
+        <TransactionSettings />
+      </div>
       <div className={classes.spacer} />
       <Paper className={classes.mainPaper}>
         <WaitingForTxSubmission

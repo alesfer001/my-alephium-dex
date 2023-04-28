@@ -7,7 +7,6 @@ import RemoveLiquidity from "../components/RemoveLiquidity";
 import AddPool from "../components/AddPool";
 import Pool from "../components/Pools";
 import { AlephiumConnectButton } from "@alephium/web3-react";
-import TransactionSettings from "../components/Settings";
 import { useDispatch } from "react-redux"
 import { reset as resetSwapState } from "../state/swap/actions";
 import { reset as resetMintState } from "../state/mint/actions";
@@ -120,10 +119,7 @@ function Home() {
               </Link>
             </div>
           </Hidden>
-          <div style={{ position: "absolute", top: "6px", right: "30px" }}>
-            <TransactionSettings />
-          </div>
-          <div style={{ position: "absolute", top: "10px", right: "80px" }}>
+          <div style={{ position: "absolute", top: "10px", right: "30px" }}>
             <AlephiumConnectButton />
           </div>
         </Toolbar>
