@@ -1,5 +1,8 @@
 import { makeStyles, AppBar, Toolbar, Link, Hidden, Grid, Card, CardContent, Typography } from "@material-ui/core";
 import logo from "../../images/alephium-logo.png";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import CountUp from "react-countup";
 
 const useStyles = makeStyles((theme) => ({
     exchange: {
@@ -28,9 +31,33 @@ const useStyles = makeStyles((theme) => ({
 
 function ExchangeInfo() {
   const classes = useStyles();
-  // Add real data for Alephium price and TVL here
-  const alephiumPrice = "0.2604";
+  const [alephiumPrice, setAlephiumPrice] = useState(null);
+  const [previousPrice, setPreviousPrice] = useState(null);
+  // Add real data for TVL here
   const totalValueLocked = "89.92M";
+
+  useEffect(() => {
+    const fetchPrice = async () => {
+      try {
+        const response = await axios.get(
+          "https://api.coingecko.com/api/v3/simple/price?ids=alephium&vs_currencies=usd"
+        );
+        const price = response.data.alephium.usd;
+        setPreviousPrice(alephiumPrice);
+        setAlephiumPrice(price);
+      } catch (error) {
+        console.error("Error fetching Alephium price:", error);
+      }
+    };
+
+    fetchPrice();
+
+    const intervalId = setInterval(fetchPrice, 15000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [alephiumPrice]);
 
   return (
     <Grid container>
@@ -42,7 +69,17 @@ function ExchangeInfo() {
               <CardContent className={classes.cardContent}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <img src={logo} alt="Alephium" style={{ marginRight: 8, width: 24, height: 24 }} />
-                  <Typography variant="h6">${alephiumPrice}</Typography>
+                  <Typography variant="h6">
+                    $
+                    {alephiumPrice && previousPrice && (
+                      <CountUp
+                        start={previousPrice}
+                        end={alephiumPrice}
+                        duration={0.5}
+                        decimals={6}
+                      />
+                    )}
+                  </Typography>
                 </div>
               </CardContent>
             </Card>
