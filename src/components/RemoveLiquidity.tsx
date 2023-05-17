@@ -24,7 +24,7 @@ import { TransactionSubmitted, WaitingForTxSubmission } from "./Transactions";
 import { DetailItem } from "./DetailsItem";
 import { useHistory } from "react-router-dom";
 
-function RemoveLiquidity() {
+function RemoveLiquidity({ position }) {
   const classes = commonStyles();
   const [amountInput, setAmountInput] = useState<string | undefined>(undefined)
   const [amount, setAmount] = useState<bigint | undefined>(undefined)

@@ -70,6 +70,11 @@ export const commonStyles = makeStyles((theme) => ({
     textAlign: "center",
     width: "100%",
   },
+  centeredButton: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: theme.spacing(2),
+  },
   swapTitle: {
     display: "flex",
     alignItems: "center",

@@ -1,4 +1,5 @@
-import { Card, Container, Paper, Typography } from "@material-ui/core";
+import { Card, Container, Paper, Typography, Button, IconButton, Box } from "@material-ui/core";
+import { ArrowBack } from "@material-ui/icons";
 import Collapse from "@material-ui/core/Collapse";
 import { useCallback, useMemo, useState } from "react";
 import ButtonWithLoader from "./ButtonWithLoader";
@@ -18,7 +19,7 @@ import { useHistory } from "react-router-dom";
 import { TransactionSubmitted, WaitingForTxSubmission } from "./Transactions";
 import { DetailItem } from "./DetailsItem";
 
-function AddLiquidity() {
+function AddLiquidity({ goBack }) {
   const classes = commonStyles();
   const [txId, setTxId] = useState<string | undefined>(undefined)
   const [addingLiquidity, setAddingLiquidity] = useState<boolean>(false)
@@ -69,6 +70,17 @@ function AddLiquidity() {
     return tryGetBalance(balance, tokenBInfo)
   }, [balance, tokenBInfo])
 
+  const handleMaxAButtonClick = () => {
+    const hasLiquidity = tokenPairState !== undefined && tokenPairState.reserve0 > 0n
+    dispatch(typeInput({ type: 'TokenA', value: tokenABalance ? tokenABalance : '0', hasLiquidity }))
+  };
+
+  const handleMaxBButtonClick = () => {
+    const hasLiquidity = tokenPairState !== undefined && tokenPairState.reserve0 > 0n
+    dispatch(typeInput({ type: 'TokenB', value: tokenBBalance ? tokenBBalance : '0', hasLiquidity }))
+  };
+
+
   const sourceContent = (
     <div className={classes.tokenContainerWithBalance}>
       <div className={classes.inputRow}>
@@ -79,14 +91,24 @@ function AddLiquidity() {
           tokenBalances={balance}
           style2={true}
         />
-        <NumberTextField
-          className={classes.numberField}
-          value={tokenAInput !== undefined ? tokenAInput : ''}
-          onChange={handleTokenAAmountChange}
-          autoFocus={true}
-          InputProps={{ disableUnderline: true }}
-          disabled={!!addingLiquidity || !!completed}
-        />
+        <div className={classes.inputWithMaxButton}>
+          <NumberTextField
+            className={classes.numberField}
+            value={tokenAInput !== undefined ? tokenAInput : ''}
+            onChange={handleTokenAAmountChange}
+            autoFocus={true}
+            InputProps={{ disableUnderline: true }}
+            disabled={!!addingLiquidity || !!completed}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.maxButton}
+            onClick={handleMaxAButtonClick}
+          >
+            Max
+          </Button>
+        </div>
       </div>
       {tokenABalance ?
         (<Typography className={classes.balance}>
@@ -103,13 +125,23 @@ function AddLiquidity() {
           onChange={handleTokenBChange}
           tokenBalances={balance}
         />
-        <NumberTextField
-          className={classes.numberField}
-          value={tokenBInput !== undefined ? tokenBInput : ''}
-          onChange={handleTokenBAmountChange}
-          InputProps={{ disableUnderline: true }}
-          disabled={!!addingLiquidity || !!completed}
-        />
+        <div className={classes.inputWithMaxButton}>
+          <NumberTextField
+            className={classes.numberField}
+            value={tokenBInput !== undefined ? tokenBInput : ''}
+            onChange={handleTokenBAmountChange}
+            InputProps={{ disableUnderline: true }}
+            disabled={!!addingLiquidity || !!completed}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.maxButton}
+            onClick={handleMaxBButtonClick}
+          >
+            Max
+          </Button>
+        </div>
       </div>
       {tokenBBalance ?
         (<Typography className={classes.balance}>
@@ -170,16 +202,21 @@ function AddLiquidity() {
         classes.gradientButton + (!readyToAddLiquidity ? " " + classes.disabled : "")
       }
     >
-      Add Liquidity
+      {wallet ? "Add Liquidity" : "Your wallet is not connected"}
     </ButtonWithLoader>
   );
 
   return (
     <Container className={classes.centeredContainer} maxWidth="sm">
-      <div className={classes.titleBar}></div>
-      <Typography variant="h4" color="textSecondary">
-        Add Liquidity
-      </Typography>
+      <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+        <IconButton onClick={goBack}>
+          <ArrowBack />
+        </IconButton>
+        <Typography variant="h5" color="textSecondary">
+          Add Liquidity
+        </Typography>
+        <div></div>
+      </Box>
       <div className={classes.spacer} />
       <Paper className={classes.mainPaper}>
         <WaitingForTxSubmission
@@ -192,15 +229,8 @@ function AddLiquidity() {
           buttonText="Swap Coins"
           onClick={redirectToSwap}
         />
-        {wallet === undefined ?
-          <div>
-            <Typography variant="h6" color="error" className={classes.error}>
-              Your wallet is not connected
-            </Typography>
-          </div> : null
-        }
         <div>
-          <Collapse in={!addingLiquidity && !completed && wallet !== undefined}>
+          <Collapse in={!addingLiquidity && !completed }>
             {
               <>
                 {sourceContent}

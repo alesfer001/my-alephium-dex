@@ -2,8 +2,7 @@ import { makeStyles, AppBar, Toolbar, Link, Hidden } from "@material-ui/core";
 import { NavLink, Switch, Route, Redirect } from "react-router-dom";
 import { COLORS } from "../muiTheme";
 import Swap from "../components/Swap";
-import AddLiquidity from "../components/AddLiquidity";
-import RemoveLiquidity from "../components/RemoveLiquidity";
+import UserLiquidity from "../components/UserLiquidity";
 import AddPool from "../components/AddPool";
 import Pool from "../components/Pools";
 import { AlephiumConnectButton } from "@alephium/web3-react";
@@ -86,20 +85,12 @@ function Home() {
               </Link>
               <Link
                 component={NavLink}
-                to="/add-liquidity"
+                to="/liquidity"
                 color="inherit"
                 className={classes.link}
                 onClick={() => { dispatch(resetMintState()) }}
               >
-                Add Liquidity
-              </Link>
-              <Link
-                component={NavLink}
-                to="/remove-liquidity"
-                color="inherit"
-                className={classes.link}
-              >
-                Remove Liquidity
+                Liquidity
               </Link>
               <Link
                 component={NavLink}
@@ -129,11 +120,8 @@ function Home() {
         <Route exact path="/swap">
           <Swap />
         </Route>
-        <Route exact path="/add-liquidity">
-          <AddLiquidity />
-        </Route>
-        <Route exact path="/remove-liquidity">
-          <RemoveLiquidity />
+        <Route exact path="/liquidity">
+          <UserLiquidity />
         </Route>
         <Route exact path="/add-pool">
           <AddPool />
