@@ -8,7 +8,7 @@ function LiquidityPosition({ position, onAdd, onRemove }) {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Typography variant="h6">
-              {position.tokenA}/{position.tokenB}
+              {position.tokenA.name}/{position.tokenB.name}
             </Typography>
           </Grid>
           <Grid item xs={6}>

@@ -76,13 +76,22 @@ export const commonStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   swapTitle: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    "& h5": {
-      textAlign: "center",
-      flexGrow: 1
-    }
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: theme.spacing(2),
+  },
+  addLiquidityButton: {
+    position: 'absolute',
+    right: 0,
+  },
+  backButton: {
+    position: "absolute",
+    left: 0,
+  },
+  centerTitle: {
+    textAlign: "center",
   },
   spacer: {
     height: "1rem",

@@ -24,7 +24,7 @@ import { TransactionSubmitted, WaitingForTxSubmission } from "./Transactions";
 import { DetailItem } from "./DetailsItem";
 import { useHistory } from "react-router-dom";
 
-function RemoveLiquidity({ position }) {
+function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
   const classes = commonStyles();
   const [amountInput, setAmountInput] = useState<string | undefined>(undefined)
   const [amount, setAmount] = useState<bigint | undefined>(undefined)
@@ -57,7 +57,15 @@ function RemoveLiquidity({ position }) {
       const balance = availableBalance.get(tokenPairState.tokenPairId)
       setTotalLiquidityAmount(balance === undefined ? 0n : balance)
     }
-  }, [tokenPairState, getTokenPairStateError, availableBalance])
+
+    if (selectedTokenA) {
+      setTokenAInfo(selectedTokenA);
+    }
+
+    if (selectedTokenB) {
+      setTokenBInfo(selectedTokenB);
+    }
+  }, [tokenPairState, getTokenPairStateError, availableBalance, selectedTokenA, selectedTokenB])
 
   useEffect(() => {
     setRemoveLiquidityDetails(undefined)

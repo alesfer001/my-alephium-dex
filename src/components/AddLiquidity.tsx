@@ -1,7 +1,7 @@
 import { Card, Container, Paper, Typography, Button, IconButton, Box } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import Collapse from "@material-ui/core/Collapse";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import ButtonWithLoader from "./ButtonWithLoader";
 import TokenSelectDialog from "./TokenSelectDialog";
 import NumberTextField from "./NumberTextField";
@@ -19,7 +19,7 @@ import { useHistory } from "react-router-dom";
 import { TransactionSubmitted, WaitingForTxSubmission } from "./Transactions";
 import { DetailItem } from "./DetailsItem";
 
-function AddLiquidity({ goBack }) {
+function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
   const classes = commonStyles();
   const [txId, setTxId] = useState<string | undefined>(undefined)
   const [addingLiquidity, setAddingLiquidity] = useState<boolean>(false)
@@ -30,6 +30,16 @@ function AddLiquidity({ goBack }) {
   const wallet = useAlephiumWallet()
   const balance = useAvailableBalances()
   const history = useHistory()
+
+  useEffect(() => {
+    if (selectedTokenA) {
+      dispatch(selectTokenA(selectedTokenA));
+    }
+
+    if (selectedTokenB) {
+      dispatch(selectTokenB(selectedTokenB));
+    }
+  }, [dispatch, selectedTokenA, selectedTokenB]);
 
   const handleTokenAChange = useCallback((tokenInfo) => {
     dispatch(selectTokenA(tokenInfo))
@@ -208,11 +218,11 @@ function AddLiquidity({ goBack }) {
 
   return (
     <Container className={classes.centeredContainer} maxWidth="sm">
-      <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
-        <IconButton onClick={goBack}>
+      <Box display="flex" justifyContent="center" alignItems="center" width="100%" position="relative">
+        <IconButton onClick={goBack} className={classes.backButton}>
           <ArrowBack />
         </IconButton>
-        <Typography variant="h5" color="textSecondary">
+        <Typography variant="h5" color="textSecondary" className={classes.centerTitle}>
           Add Liquidity
         </Typography>
         <div></div>
