@@ -1,4 +1,5 @@
-import { Card, Container, Paper, Typography } from "@material-ui/core";
+import { Box, Card, Container, Paper, Typography, IconButton, Button } from "@material-ui/core";
+import { ArrowBack } from "@material-ui/icons";
 import Collapse from "@material-ui/core/Collapse";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ButtonWithLoader from "./ButtonWithLoader";
@@ -105,6 +106,23 @@ function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
     }, []
   )
 
+  const handleMaxButtonClick = () => {
+      setError(undefined)
+      if (totalLiquidityAmount === undefined) {
+        setAmount(undefined)
+        setAmountInput(undefined)
+        return
+      }
+      let amount = formatUnits(totalLiquidityAmount, PairTokenDecimals)
+      setAmountInput(amount)
+      try {
+        setAmount(stringToBigInt(amount, PairTokenDecimals))
+      } catch (error) {
+        console.log(`error: ${error}`)
+        setError(`${error}`)
+      }
+    }
+
   const redirectToSwap = useCallback(() => {
     setTokenAInfo(undefined)
     setTokenBInfo(undefined)
@@ -140,7 +158,7 @@ function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
   const completed = useMemo(() => txId !== undefined, [txId])
   
   const amountInputBox = (
-    <div className={classes.tokenContainer}>
+    <div className={classes.inputWithMaxButton}>
       <NumberTextField
         className={classes.numberField}
         value={amountInput !== undefined ? amountInput : ''}
@@ -149,7 +167,16 @@ function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
         InputProps={{ disableUnderline: true }}
         disabled={!!removingLiquidity || !!completed}
       />
+      <Button
+        variant="contained"
+        color="primary"
+        className={classes.maxButton}
+        onClick={handleMaxButtonClick}
+      >
+        Max
+      </Button>
     </div>
+
   )
 
   const handleRemoveLiquidity = useCallback(async () => {
@@ -214,10 +241,15 @@ function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
 
   return (
     <Container className={classes.centeredContainer} maxWidth="sm">
-      <div className={classes.titleBar}></div>
-      <Typography variant="h4" color="textSecondary">
-        Remove Liquidity
-      </Typography>
+      <Box display="flex" justifyContent="center" alignItems="center" width="100%" position="relative">
+        <IconButton onClick={goBack} className={classes.backButton}>
+          <ArrowBack />
+        </IconButton>
+        <Typography variant="h5" color="textSecondary" className={classes.centerTitle}>
+          Remove Liquidity
+        </Typography>
+        <div></div>
+      </Box>
       <div className={classes.spacer} />
       <Paper className={classes.mainPaper}>
         <WaitingForTxSubmission
