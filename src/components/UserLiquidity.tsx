@@ -1,12 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Container, Typography, Paper } from '@material-ui/core';
 import AddLiquidity from './AddLiquidity';
 import RemoveLiquidity from './RemoveLiquidity';
 import LiquidityPosition from './LiquidityPosition';
 import { commonStyles } from "./style";
-import { useAlephiumWallet } from "../hooks/useAlephiumWallet";
+import { useAlephiumWallet, useAvailableBalances } from "../hooks/useAlephiumWallet";
 import { AlephiumConnectButton } from "@alephium/web3-react";
-import { TokenList } from "../utils/dex";
+import { TokenList, bigIntToString, PairTokenDecimals } from "../utils/dex";
+import { useTokenPairState } from "../state/useTokenPairState";
+import { TokenInfo } from "@alephium/token-list";
+import BigNumber from "bignumber.js";
+
+type Position = {
+    tokenA: TokenInfo;
+    tokenB: TokenInfo;
+    poolTokenBalance: string;
+    sharePercentage: number;
+}
 
 function UserLiquidity() {
   const classes = commonStyles();
@@ -15,6 +25,7 @@ function UserLiquidity() {
   const [selectedTokenB, setSelectedTokenB] = useState(null);
   const [showRemoveLiquidity, setShowRemoveLiquidity] = useState(false);
   const wallet = useAlephiumWallet()
+  const balance = useAvailableBalances()
 
   const handleAddLiquidity = (tokenA, tokenB) => {
     setSelectedTokenA(tokenA);
@@ -27,6 +38,26 @@ function UserLiquidity() {
     setSelectedTokenB(tokenB);
     setShowRemoveLiquidity(true);
   };
+
+  // Need to loop over positions or tokens here
+  const { tokenPairState, getTokenPairStateError } = useTokenPairState(TokenList[0], TokenList[1])
+  const [userPositions, setUserPositions] = useState<Position[]>([])
+
+  useEffect(() => {
+    if(tokenPairState) {
+      const poolTokenBalance = balance.get(tokenPairState.tokenPairId) ?? 0n;
+      const sharePecentage = BigNumber((poolTokenBalance * 100n).toString()).div(BigNumber(tokenPairState.totalSupply.toString())).toFixed(5);
+      const userPosition = {
+        tokenA: TokenList[0],
+        tokenB: TokenList[1],
+        poolTokenBalance: bigIntToString(poolTokenBalance, PairTokenDecimals),
+        sharePercentage: parseFloat(sharePecentage),
+      };
+      if(userPositions.length === 0 || JSON.stringify(userPositions[0]) !== JSON.stringify(userPosition)) {
+        setUserPositions([userPosition]);
+      }
+    }
+  }, [tokenPairState, balance]);
 
   if (showAddLiquidity) {
     return <AddLiquidity
@@ -51,25 +82,6 @@ function UserLiquidity() {
              }}
            />;
   }
-
-  const userPositions = [
-    // Fetch user positions here
-    {
-      tokenA: TokenList[0],
-      tokenB: TokenList[1],
-      liquidity: "10",
-      feesAccrued: "0.1",
-      feesUnclaimed: "0.05"
-    },
-    {
-      tokenA: TokenList[0],
-      tokenB: TokenList[2],
-      liquidity: "21",
-      feesAccrued: "0.5",
-      feesUnclaimed: "0"
-    }
-  ];
-
 
   return (
     <Container className={classes.centeredContainer} maxWidth="sm">

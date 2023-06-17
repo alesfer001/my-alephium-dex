@@ -14,13 +14,13 @@ function LiquidityPosition({ position, onAdd, onRemove }) {
           <Grid item xs={6}>
             <Typography variant="body2">Liquidity:</Typography>
             <Typography variant="body1" style={{ fontWeight: 'bold' }}>
-              {position.liquidity} $
+              {position.poolTokenBalance}
             </Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="body2">Fees Unclaimed:</Typography>
+            <Typography variant="body2">Percentage:</Typography>
             <Typography variant="body1" style={{ fontWeight: 'bold' }}>
-              {position.feesUnclaimed} $
+              {position.sharePercentage}%
             </Typography>
           </Grid>
           <Grid item xs={6}>
