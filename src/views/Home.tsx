@@ -3,7 +3,6 @@ import { NavLink, Switch, Route, Redirect } from "react-router-dom";
 import { COLORS } from "../muiTheme";
 import Swap from "../components/Swap";
 import UserLiquidity from "../components/UserLiquidity";
-import AddPool from "../components/AddPool";
 import Pool from "../components/Pools";
 import { AlephiumConnectButton } from "@alephium/web3-react";
 import { useDispatch } from "react-redux"
@@ -94,19 +93,11 @@ function Home() {
               </Link>
               <Link
                 component={NavLink}
-                to="/add-pool"
-                color="inherit"
-                className={classes.link}
-              >
-                Add Pool
-              </Link>
-              <Link
-                component={NavLink}
                 to="/pool"
                 color="inherit"
                 className={classes.link}
               >
-                Pool
+                Pools
               </Link>
             </div>
           </Hidden>
@@ -122,9 +113,6 @@ function Home() {
         </Route>
         <Route exact path="/liquidity">
           <UserLiquidity />
-        </Route>
-        <Route exact path="/add-pool">
-          <AddPool />
         </Route>
         <Route exact path="/pool">
           <Pool />

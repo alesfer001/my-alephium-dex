@@ -1,4 +1,4 @@
-import { Container, Paper, Typography, Card } from "@material-ui/core";
+import { Container, Paper, Typography, Card, Button } from "@material-ui/core";
 import Collapse from "@material-ui/core/Collapse";
 import { useState, useCallback } from "react";
 import { bigIntToString, PairTokenDecimals, TokenPairState } from "../utils/dex";
@@ -9,14 +9,20 @@ import TokenSelectDialog from "./TokenSelectDialog";
 import { useAlephiumWallet, useAvailableBalances } from "../hooks/useAlephiumWallet";
 import { DetailItem } from "./DetailsItem";
 import BigNumber from "bignumber.js";
+import AddPool from './AddPool';
 
 function Pool() {
   const commonClasses = commonStyles()
+  const [showAddPool, setShowAddPool] = useState(false);
   const [tokenAInfo, setTokenAInfo] = useState<TokenInfo | undefined>(undefined)
   const [tokenBInfo, setTokenBInfo] = useState<TokenInfo | undefined>(undefined)
   const { tokenPairState, getTokenPairStateError } = useTokenPairState(tokenAInfo, tokenBInfo)
   const wallet = useAlephiumWallet()
   const balance = useAvailableBalances()
+
+  const handleAddPool = () => {
+    setShowAddPool(true);
+  };
 
   const handleTokenAChange = useCallback((tokenInfo) => {
     setTokenAInfo(tokenInfo)
@@ -45,12 +51,28 @@ function Pool() {
     </div>
   )
 
+  if (showAddPool) {
+    return <AddPool
+             goBack={() => {
+               setShowAddPool(false);
+             }}
+           />;
+  }
+
   return (
     <Container className={commonClasses.centeredContainer} maxWidth="sm">
-      <div className={commonClasses.titleBar}></div>
-      <Typography variant="h4" color="textSecondary">
-        Pool
-      </Typography>
+      <div className={commonClasses.swapTitle}>
+        <Typography variant="h5" color="textSecondary">
+          Pools
+        </Typography>
+        <Button
+          className={commonClasses.addLiquidityButton}
+          variant="contained"
+          color="primary"
+          onClick={() => handleAddPool()}>
+          Add Pool
+        </Button>
+      </div>
       <div className={commonClasses.spacer} />
       <Paper className={commonClasses.mainPaper}>
         <div>

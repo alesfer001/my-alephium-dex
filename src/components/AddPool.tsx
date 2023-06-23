@@ -1,4 +1,5 @@
-import { Container, Paper, Typography } from "@material-ui/core";
+import { Container, Paper, Typography, Box, IconButton } from "@material-ui/core";
+import { ArrowBack } from "@material-ui/icons";
 import Collapse from "@material-ui/core/Collapse";
 import { TokenInfo } from "@alephium/token-list"
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -10,7 +11,7 @@ import TokenSelectDialog from "./TokenSelectDialog";
 import { useHistory } from "react-router-dom";
 import { TransactionSubmitted, WaitingForTxSubmission } from "./Transactions";
 
-function AddPool() {
+function AddPool({ goBack }) {
   const commonClasses = commonStyles();
   const [tokenAInfo, setTokenAInfo] = useState<TokenInfo | undefined>(undefined)
   const [tokenBInfo, setTokenBInfo] = useState<TokenInfo | undefined>(undefined)
@@ -117,10 +118,15 @@ function AddPool() {
 
   return (
     <Container className={commonClasses.centeredContainer} maxWidth="sm">
-      <div className={commonClasses.titleBar}></div>
-      <Typography variant="h4" color="textSecondary">
-        Add Pool
-      </Typography>
+      <Box display="flex" justifyContent="center" alignItems="center" width="100%" position="relative">
+        <IconButton onClick={goBack} className={commonClasses.backButton}>
+          <ArrowBack />
+        </IconButton>
+        <Typography variant="h5" color="textSecondary" className={commonClasses.centerTitle}>
+          Add Pool
+        </Typography>
+        <div></div>
+      </Box>
       <div className={commonClasses.spacer} />
       <Paper className={commonClasses.mainPaper}>
         <WaitingForTxSubmission
