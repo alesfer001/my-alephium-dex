@@ -10,6 +10,7 @@ import { useAlephiumWallet, useAvailableBalances } from "../hooks/useAlephiumWal
 import { DetailItem } from "./DetailsItem";
 import BigNumber from "bignumber.js";
 import AddPool from './AddPool';
+import { getBlockflowChainInfo } from "../utils/getpools";
 
 function Pool() {
   const commonClasses = commonStyles()
@@ -19,6 +20,8 @@ function Pool() {
   const { tokenPairState, getTokenPairStateError } = useTokenPairState(tokenAInfo, tokenBInfo)
   const wallet = useAlephiumWallet()
   const balance = useAvailableBalances()
+
+  getBlockflowChainInfo()
 
   const handleAddPool = () => {
     setShowAddPool(true);

@@ -8,8 +8,9 @@ import { AlephiumConnectButton } from "@alephium/web3-react";
 import { useDispatch } from "react-redux"
 import { reset as resetSwapState } from "../state/swap/actions";
 import { reset as resetMintState } from "../state/mint/actions";
-import logo from "../../images/alephium-logo.png";
+import logo from "../../images/simplephium-logo.png";
 import ExchangeInfo from "../components/ExchangeInfo";
+import LandingPage from "../components/LandingPage";
 
 const useStyles = makeStyles((theme) => ({
   spacer: {
@@ -99,15 +100,28 @@ function Home() {
               >
                 Pools
               </Link>
+              <Link
+                component="a"
+                href="https://docs.shin.app"
+                color="inherit"
+                className={classes.link}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Docs
+              </Link>
             </div>
           </Hidden>
           <div style={{ position: "absolute", top: "10px", right: "30px" }}>
-            <AlephiumConnectButton />
+            <AlephiumConnectButton label="Connect" />
           </div>
         </Toolbar>
       </AppBar>
-      <ExchangeInfo />
+      {/* <ExchangeInfo /> */}
       <Switch>
+        <Route exact path="/">
+          <LandingPage />
+        </Route>
         <Route exact path="/swap">
           <Swap />
         </Route>
@@ -118,7 +132,7 @@ function Home() {
           <Pool />
         </Route>
         <Route>
-          <Redirect to="/swap" />
+          <Redirect to="/" />
         </Route>
       </Switch>
     </div>

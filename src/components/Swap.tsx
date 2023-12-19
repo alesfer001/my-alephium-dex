@@ -127,10 +127,9 @@ function Swap() {
           </Button>
         </div>
       </div>
-      {tokenInBalance ?
-        (<Typography className={classes.balance}>
+        <Typography className={classes.balance}>
           Balance: {tokenInBalance} {tokenInInfo?.symbol}
-        </Typography>) : null}
+        </Typography>
     </div>
   );
   const middleButton = <HoverIcon onClick={switchCallback} />;
@@ -161,10 +160,9 @@ function Swap() {
           </Button>
         </div>
       </div>
-      {tokenOutBalance ?
-        (<Typography className={classes.balance}>
+        <Typography className={classes.balance}>
           Balance: {tokenOutBalance} {tokenOutInfo?.symbol}
-        </Typography>) : null}
+        </Typography>
     </div>
   );
 

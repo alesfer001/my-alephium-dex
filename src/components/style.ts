@@ -79,7 +79,7 @@ export const commonStyles = makeStyles((theme) => ({
     position: 'relative',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     marginBottom: theme.spacing(2),
   },
   addLiquidityButton: {
