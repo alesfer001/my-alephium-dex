@@ -38,7 +38,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     width: "40%",
     padding: ".25rem .5rem",
-    marginRight: "1rem",
   },
   medium: {
     padding: "1.5rem 3rem",
@@ -47,7 +46,6 @@ const useStyles = makeStyles((theme) => ({
 
   },
   selectedSymbol: {
-    fontFamily: "Monospace",
     margin: ".25rem .5rem",
     fontSize: "15px"
   },
@@ -150,7 +148,7 @@ export default function TokenSelectDialog({
               alt={info.name}
             />
             <Typography variant="h6" className={classes.selectedSymbol}>
-              {info.name}
+              {info.symbol}
             </Typography>
           </>
           ): (

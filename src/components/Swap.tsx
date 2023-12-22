@@ -100,13 +100,6 @@ function Swap() {
   const sourceContent = (
     <div className={classes.tokenContainerWithBalance}>
       <div className={classes.inputRow}>
-        <TokenSelectDialog
-          tokenId={tokenInInfo?.id}
-          counterpart={tokenOutInfo?.id}
-          onChange={handleTokenInChange}
-          tokenBalances={balance}
-          style2={true}
-        />
         <div className={classes.inputWithMaxButton}>
           <NumberTextField
             className={classes.numberField}
@@ -117,31 +110,35 @@ function Swap() {
             disabled={!!swapping || !!completed}
             placeholder="0"
           />
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.maxButton}
-            onClick={handleMaxButtonClick}
-          >
-            Max
-          </Button>
+          {/* <Button
+              variant="contained"
+              color="primary"
+              className={classes.maxButton}
+              onClick={handleMaxButtonClick}
+              >
+              Max
+              </Button> */}
         </div>
+      <TokenSelectDialog
+        tokenId={tokenInInfo?.id}
+        counterpart={tokenOutInfo?.id}
+        onChange={handleTokenInChange}
+        tokenBalances={balance}
+        style2={true}
+      />
       </div>
-        <Typography className={classes.balance}>
-          Balance: {tokenInBalance} {tokenInInfo?.symbol}
-        </Typography>
+      <Typography className={classes.balance}>
+        {tokenInBalance ? `Balance: ${tokenInBalance} ${tokenInInfo?.symbol}` : " "}
+        {tokenInBalance ? (<Button className={classes.maxButton}
+                                   onClick={handleMaxButtonClick}
+                           >Max</Button>) : " "}
+      </Typography>
     </div>
   );
   const middleButton = <HoverIcon onClick={switchCallback} />;
   const targetContent = (
     <div className={classes.tokenContainerWithBalance}>
       <div className={classes.inputRow}>
-        <TokenSelectDialog
-          tokenId={tokenOutInfo?.id}
-          counterpart={tokenInInfo?.id}
-          onChange={handleTokenOutChange}
-          tokenBalances={balance}
-        />
         <div className={classes.inputWithMaxButton}>
           <NumberTextField
             className={classes.numberField}
@@ -151,17 +148,23 @@ function Swap() {
             disabled={!!swapping || !!completed}
             placeholder="0"
           />
-          <Button
-            variant="contained"
-            color="primary"
-            disabled
-            className={classes.hiddenButton}
-          >
-          </Button>
+          {/* <Button
+              variant="contained"
+              color="primary"
+              disabled
+              className={classes.hiddenButton}
+              >
+              </Button> */}
         </div>
+        <TokenSelectDialog
+          tokenId={tokenOutInfo?.id}
+          counterpart={tokenInInfo?.id}
+          onChange={handleTokenOutChange}
+          tokenBalances={balance}
+        />
       </div>
         <Typography className={classes.balance}>
-          Balance: {tokenOutBalance} {tokenOutInfo?.symbol}
+          {tokenOutBalance ? `Balance: ${tokenOutBalance} ${tokenOutInfo?.symbol}` : " "}
         </Typography>
     </div>
   );
@@ -215,7 +218,6 @@ function Swap() {
         <TransactionSettings />
       </div>
       <div className={classes.spacer} />
-      <div className={classes.gradientPaper} />
       <Paper className={classes.mainPaper}>
         <WaitingForTxSubmission
           open={!!swapping && !completed}

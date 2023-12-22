@@ -9,7 +9,7 @@ export const commonStyles = makeStyles((theme) => ({
       textAlign: "left",
       height: "100%",
       flexGrow: "1",
-      fontSize: ".8rem",
+      fontSize: "1.6rem",
       fontFamily: "Roboto Mono, monospace",
       caretShape: "block",
       width: "0",
@@ -31,21 +31,40 @@ export const commonStyles = makeStyles((theme) => ({
     width: "100%"
   },
   maxButton: {
-    marginLeft: theme.spacing(1),
+    color: COLORS.blue, // White text color
+    borderRadius: '12px', // Rounded corners
+    padding: theme.spacing(0.5, 1), // Vertical and horizontal padding
+    fontSize: '0.75rem', // Smaller font size
+    fontWeight: 'bold', // Bold font weight
+    textTransform: 'none', // Prevent uppercase transformation
+    minWidth: 'auto', // Adjust width to content
+    '&:hover': {
+      color: COLORS.blueWithTransparency,
+      backgroundColor: 'transparent', // Slightly darker purple on hover
+    },
   },
   hiddenButton: {
     marginLeft: theme.spacing(1),
     backgroundColor: "transparent !important"
   },
   tokenContainerWithBalance: {
-    padding: ".2rem .8rem",
-    width: "initial",
+    backgroundColor: '#1F2128', // a darker background color for the container
+    borderRadius: '20px',
+    border: '1px solid rgba(255, 255, 255, 0.1)', // subtle border
+    padding: theme.spacing(2),
+    position: 'relative', // for absolute positioning of the balance
   },
+  // tokenContainerWithBalance: {
+  //   padding: ".2rem .8rem",
+  //   width: "initial",
+  // },
   balance: {
     display: 'flex',
     padding: "0.1rem",
     justifyContent: 'flex-end',
-    fontSize: '.6rem'
+    fontSize: '.7rem',
+    paddingTop: "1rem",
+    alignItems: "center"
   },
   inputRow: {
     display: "flex",
@@ -100,18 +119,24 @@ export const commonStyles = makeStyles((theme) => ({
     padding: "1.5rem",
     backgroundColor: COLORS.nearBlackWithMinorTransparency,
     borderRadius: "24px",
-    border: "1px solid rgba(255, 255, 255, 0.07)"
-  },
-  gradientPaper: {
-    // width:"500px",
-    display: "flex",
-    height: "400px",
-    width: "550px",
-    position: "absolute",
-    transform: "scale(1.1)",
-    filter: "blur(50px)",
-    backgroundColor: "rgba(131, 185, 252, 0.175)",
-    "z-index": "-2"
+    border: "1px solid rgba(255, 255, 255, 0.07)",
+    position: 'relative', // This is needed to position the `&:before` pseudo-element
+    // overflow: 'hidden', // This can be added to prevent the blur effect from bleeding outside the borderRadius
+    "&:before": {
+      content: '""',
+      display: "block",
+      top: 0, // Stretch to the full height of the parent
+      left: 0,
+      right: 0, // Stretch to the full width of the parent
+      bottom: 0, // Stretch to the full height of the parent
+      // height: "400px",
+      // width: "500px",
+      position: "absolute",
+      transform: "scale(1.1)",
+      filter: "blur(50px)",
+      backgroundColor: "rgba(131, 185, 252, 0.175)",
+      zIndex: "-2"
+    },
   },
   titleBar: {
     marginTop: "10rem",
