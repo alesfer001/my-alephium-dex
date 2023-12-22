@@ -215,6 +215,7 @@ function Swap() {
         <TransactionSettings />
       </div>
       <div className={classes.spacer} />
+      <div className={classes.gradientPaper} />
       <Paper className={classes.mainPaper}>
         <WaitingForTxSubmission
           open={!!swapping && !completed}

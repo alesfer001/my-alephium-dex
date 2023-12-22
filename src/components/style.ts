@@ -99,6 +99,19 @@ export const commonStyles = makeStyles((theme) => ({
   mainPaper: {
     padding: "1.5rem",
     backgroundColor: COLORS.nearBlackWithMinorTransparency,
+    borderRadius: "24px",
+    border: "1px solid rgba(255, 255, 255, 0.07)"
+  },
+  gradientPaper: {
+    // width:"500px",
+    display: "flex",
+    height: "400px",
+    width: "550px",
+    position: "absolute",
+    transform: "scale(1.1)",
+    filter: "blur(50px)",
+    backgroundColor: "rgba(131, 185, 252, 0.175)",
+    "z-index": "-2"
   },
   titleBar: {
     marginTop: "10rem",
