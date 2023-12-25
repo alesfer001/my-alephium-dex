@@ -4,7 +4,6 @@ import { COLORS } from "../muiTheme";
 export const commonStyles = makeStyles((theme) => ({
   numberField: {
     flexGrow: 1,
-    backgroundColor: "rgba(29, 31, 32, 0.5)",
     "& > * > .MuiInputBase-input": {
       textAlign: "left",
       height: "100%",

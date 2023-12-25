@@ -47,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
   },
   selectedSymbol: {
     margin: ".25rem .5rem",
+    marginLeft: "1rem",
     fontSize: "15px"
   },
   icon: {
