@@ -13,6 +13,13 @@ export const commonStyles = makeStyles((theme) => ({
       caretShape: "block",
       width: "0",
       padding: theme.spacing(1),
+      // textAlign: "right",
+      // height: "100%",
+      // flexGrow: "1",
+      // fontSize: "1.5rem",
+      // fontFamily: "Roboto Mono, monospace",
+      // caretShape: "block",
+      // width: "0",
       "&::-webkit-outer-spin-button, &::-webkit-inner-spin-button": {
         "-webkit-appearance": "none",
         "-moz-appearance": "none",
@@ -64,6 +71,17 @@ export const commonStyles = makeStyles((theme) => ({
     fontSize: '.7rem',
     paddingTop: "1rem",
     alignItems: "center"
+  // tokenContainerWithBalance: {
+  //   minHeight: "44px",
+  //   padding: ".2rem .8rem",
+  //   border: "3px solid #333333",
+  //   borderRadius: "10px",
+  //   width: "initial",
+  //   height: "80px",
+  // },
+  // balance: {
+  //   display: 'flex',
+  //   padding: "0.1rem"
   },
   inputRow: {
     display: "flex",
@@ -136,6 +154,7 @@ export const commonStyles = makeStyles((theme) => ({
       backgroundColor: "rgba(131, 185, 252, 0.175)",
       zIndex: "-2"
     },
+    // padding: "2rem",
   },
   titleBar: {
     marginTop: "10rem",

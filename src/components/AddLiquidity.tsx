@@ -6,7 +6,7 @@ import ButtonWithLoader from "./ButtonWithLoader";
 import TokenSelectDialog from "./TokenSelectDialog";
 import NumberTextField from "./NumberTextField";
 import { addLiquidity, bigIntToString, PairTokenDecimals, minimalAmount, AddLiquidityDetails, tryGetBalance } from "../utils/dex";
-import { useAlephiumWallet, useAvailableBalances } from "../hooks/useAlephiumWallet";
+import { useAvailableBalances } from "../hooks/useAvailableBalance";
 import { useSlippageTolerance } from "../hooks/useSlippageTolerance";
 import { useDeadline } from "../hooks/useDeadline";
 import { DEFAULT_SLIPPAGE } from "../state/settings/reducer";
@@ -18,6 +18,7 @@ import { commonStyles } from "./style";
 import { useHistory } from "react-router-dom";
 import { TransactionSubmitted, WaitingForTxSubmission } from "./Transactions";
 import { DetailItem } from "./DetailsItem";
+import { useWallet } from "@alephium/web3-react";
 
 function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
   const classes = commonStyles();
@@ -27,9 +28,6 @@ function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
   const [deadline,] = useDeadline()
   const dispatch = useDispatch()
   const [error, setError] = useState<string | undefined>(undefined)
-  const wallet = useAlephiumWallet()
-  const balance = useAvailableBalances()
-  const history = useHistory()
 
   useEffect(() => {
     if (selectedTokenA) {
@@ -40,6 +38,10 @@ function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
       dispatch(selectTokenB(selectedTokenB));
     }
   }, [dispatch, selectedTokenA, selectedTokenB]);
+
+  const { signer, account, connectionStatus, explorerProvider } = useWallet()
+  const { balance, updateBalanceForTx } = useAvailableBalances()
+  const history = useHistory()
 
   const handleTokenAChange = useCallback((tokenInfo) => {
     dispatch(selectTokenA(tokenInfo))
@@ -89,7 +91,6 @@ function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
     const hasLiquidity = tokenPairState !== undefined && tokenPairState.reserve0 > 0n
     dispatch(typeInput({ type: 'TokenB', value: tokenBBalance ? tokenBBalance : '0', hasLiquidity }))
   };
-
 
   const sourceContent = (
     <div className={classes.tokenContainerWithBalance}>
@@ -164,8 +165,10 @@ function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
     try {
       setAddingLiquidity(true)
       if (
-        wallet !== undefined &&
-        wallet.signer.explorerProvider !== undefined &&
+        /* wallet !== undefined &&
+         * wallet.signer.explorerProvider !== undefined && */
+        connectionStatus === 'connected' &&
+        explorerProvider !== undefined &&
         tokenPairState !== undefined &&
         tokenAInfo !== undefined &&
         tokenBInfo !== undefined &&
@@ -174,9 +177,9 @@ function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
       ) {
         const result = await addLiquidity(
           balance,
-          wallet.signer,
-          wallet.signer.explorerProvider,
-          wallet.address,
+          signer,
+          explorerProvider,
+          account.address,
           tokenPairState,
           tokenAInfo,
           tokenBInfo,
@@ -187,6 +190,7 @@ function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
         )
         console.log(`add liquidity succeed, tx id: ${result.txId}`)
         setTxId(result.txId)
+        updateBalanceForTx(result.txId)
         setAddingLiquidity(false)
       }
     } catch (error) {
@@ -194,10 +198,10 @@ function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
       setAddingLiquidity(false)
       console.error(`failed to add liquidity, error: ${error}`)
     }
-  }, [wallet, tokenPairState, tokenAInfo, tokenBInfo, tokenAAmount, tokenBAmount, slippage, deadline, balance])
+  }, [connectionStatus, explorerProvider, signer, account, tokenPairState, tokenAInfo, tokenBInfo, tokenAAmount, tokenBAmount, slippage, deadline, balance, updateBalanceForTx])
 
   const readyToAddLiquidity =
-    wallet !== undefined &&
+    connectionStatus === 'connected' &&
     tokenAInfo !== undefined &&
     tokenBInfo !== undefined &&
     tokenAAmount !== undefined &&
@@ -212,7 +216,7 @@ function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
         classes.gradientButton + (!readyToAddLiquidity ? " " + classes.disabled : "")
       }
     >
-      {wallet ? "Add Liquidity" : "Your wallet is not connected"}
+      {connectionStatus === 'connected' ? "Add Liquidity" : "Your wallet is not connected"}
     </ButtonWithLoader>
   );
 
@@ -240,7 +244,7 @@ function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
           onClick={redirectToSwap}
         />
         <div>
-          <Collapse in={!addingLiquidity && !completed }>
+          <Collapse in={!addingLiquidity && !completed && connectionStatus === 'connected'}>
             {
               <>
                 {sourceContent}

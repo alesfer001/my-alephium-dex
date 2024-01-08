@@ -9,7 +9,7 @@ import {
   TestContractResult,
   HexString,
   ContractFactory,
-  SubscribeOptions,
+  EventSubscribeOptions,
   EventSubscription,
   CallContractParams,
   CallContractResult,
@@ -24,7 +24,8 @@ import {
   ContractInstance,
   getContractEventsCurrentCount,
 } from "@alephium/web3";
-import { default as RouterContractJson } from "../dex/router.ral.json";
+import { default as RouterContractJson } from "../dex/Router.ral.json";
+import { getContractByCodeHash } from "./contracts";
 
 // Custom types for the contract
 export namespace RouterTypes {
@@ -70,6 +71,29 @@ export namespace RouterTypes {
 }
 
 class Factory extends ContractFactory<RouterInstance, {}> {
+  consts = {
+    ErrorCodes: {
+      ReserveOverflow: BigInt(0),
+      InsufficientInitLiquidity: BigInt(1),
+      InsufficientLiquidityMinted: BigInt(2),
+      InsufficientLiquidityBurned: BigInt(3),
+      InvalidToAddress: BigInt(4),
+      InsufficientLiquidity: BigInt(5),
+      InvalidTokenInId: BigInt(6),
+      InvalidCalleeId: BigInt(7),
+      InvalidK: BigInt(8),
+      InsufficientOutputAmount: BigInt(9),
+      InsufficientInputAmount: BigInt(10),
+      IdenticalTokenIds: BigInt(11),
+      Expired: BigInt(12),
+      InsufficientToken0Amount: BigInt(13),
+      InsufficientToken1Amount: BigInt(14),
+      TokenNotExist: BigInt(15),
+      InvalidCaller: BigInt(16),
+      FeeCollectorNotEnabled: BigInt(17),
+    },
+  };
+
   at(address: string): RouterInstance {
     return new RouterInstance(address);
   }
@@ -205,7 +229,7 @@ export const Router = new Factory(
   Contract.fromJson(
     RouterContractJson,
     "",
-    "8b04be2dd9da1696690fee435abf99af0232d10388336155a147d9006c60ffdb"
+    "5b325453e5506a90851742af5f7797303703acecb523830220a105a88273b1b0"
   )
 );
 
@@ -223,12 +247,24 @@ export class RouterInstance extends ContractInstance {
     addLiquidity: async (
       params: RouterTypes.CallMethodParams<"addLiquidity">
     ): Promise<RouterTypes.CallMethodResult<"addLiquidity">> => {
-      return callMethod(Router, this, "addLiquidity", params);
+      return callMethod(
+        Router,
+        this,
+        "addLiquidity",
+        params,
+        getContractByCodeHash
+      );
     },
     removeLiquidity: async (
       params: RouterTypes.CallMethodParams<"removeLiquidity">
     ): Promise<RouterTypes.CallMethodResult<"removeLiquidity">> => {
-      return callMethod(Router, this, "removeLiquidity", params);
+      return callMethod(
+        Router,
+        this,
+        "removeLiquidity",
+        params,
+        getContractByCodeHash
+      );
     },
   };
 
@@ -238,7 +274,8 @@ export class RouterInstance extends ContractInstance {
     return (await multicallMethods(
       Router,
       this,
-      calls
+      calls,
+      getContractByCodeHash
     )) as RouterTypes.MultiCallResults<Calls>;
   }
 }

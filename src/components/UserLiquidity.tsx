@@ -4,12 +4,13 @@ import AddLiquidity from './AddLiquidity';
 import RemoveLiquidity from './RemoveLiquidity';
 import LiquidityPosition from './LiquidityPosition';
 import { commonStyles } from "./style";
-import { useAlephiumWallet, useAvailableBalances } from "../hooks/useAlephiumWallet";
+import { useAvailableBalances } from "../hooks/useAvailableBalance";
 import { AlephiumConnectButton } from "@alephium/web3-react";
 import { TokenList, bigIntToString, PairTokenDecimals } from "../utils/dex";
 import { useTokenPairState } from "../state/useTokenPairState";
 import { TokenInfo } from "@alephium/token-list";
 import BigNumber from "bignumber.js";
+import { useWallet } from "@alephium/web3-react";
 
 type Position = {
     tokenA: TokenInfo;
@@ -24,8 +25,9 @@ function UserLiquidity() {
   const [selectedTokenA, setSelectedTokenA] = useState(null);
   const [selectedTokenB, setSelectedTokenB] = useState(null);
   const [showRemoveLiquidity, setShowRemoveLiquidity] = useState(false);
-  const wallet = useAlephiumWallet()
-  const balance = useAvailableBalances()
+
+  const { signer, account, connectionStatus, explorerProvider } = useWallet()
+  const { balance, updateBalanceForTx } = useAvailableBalances()
 
   const handleAddLiquidity = (tokenA, tokenB) => {
     setSelectedTokenA(tokenA);
@@ -99,7 +101,7 @@ function UserLiquidity() {
       </div>
       <div className={classes.spacer} />
       <Paper className={classes.mainPaper}>
-        {wallet && userPositions.length > 0 ? (
+        {connectionStatus === 'connected' && userPositions.length > 0 ? (
           userPositions.map((position, index) => (
             <LiquidityPosition
               key={index}
@@ -112,7 +114,7 @@ function UserLiquidity() {
             <Typography variant="body2">
               Your active liquidity positions will appear here.
             </Typography>
-            {!wallet && (
+            {connectionStatus !== 'connected' && (
               <div className={classes.centeredButton}>
                 <AlephiumConnectButton />
               </div>

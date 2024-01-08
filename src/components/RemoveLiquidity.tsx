@@ -15,7 +15,7 @@ import {
   bigIntToString
 } from "../utils/dex";
 import { formatUnits } from "ethers/lib/utils";
-import { useAlephiumWallet, useAvailableBalances } from "../hooks/useAlephiumWallet";
+import { useAvailableBalances } from "../hooks/useAvailableBalance";
 import { useSlippageTolerance } from "../hooks/useSlippageTolerance";
 import { useDeadline } from "../hooks/useDeadline";
 import { DEFAULT_SLIPPAGE } from "../state/settings/reducer";
@@ -24,6 +24,7 @@ import { useTokenPairState } from "../state/useTokenPairState";
 import { TransactionSubmitted, WaitingForTxSubmission } from "./Transactions";
 import { DetailItem } from "./DetailsItem";
 import { useHistory } from "react-router-dom";
+import { useWallet } from "@alephium/web3-react";
 
 function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
   const classes = commonStyles();
@@ -38,8 +39,8 @@ function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
   const [slippage,] = useSlippageTolerance()
   const [deadline,] = useDeadline()
   const [error, setError] = useState<string | undefined>(undefined)
-  const wallet = useAlephiumWallet()
-  const availableBalance = useAvailableBalances()
+  const { connectionStatus, signer, account, explorerProvider } = useWallet()
+  const { balance: availableBalance, updateBalanceForTx } = useAvailableBalances()
   const history = useHistory()
 
   const handleTokenAChange = useCallback((tokenInfo) => {
@@ -58,7 +59,6 @@ function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
       const balance = availableBalance.get(tokenPairState.tokenPairId)
       setTotalLiquidityAmount(balance === undefined ? 0n : balance)
     }
-
     if (selectedTokenA) {
       setTokenAInfo(selectedTokenA);
     }
@@ -176,15 +176,16 @@ function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
         Max
       </Button>
     </div>
-
   )
 
   const handleRemoveLiquidity = useCallback(async () => {
     try {
       setRemovingLiquidity(true)
       if (
-        wallet !== undefined &&
-        wallet.signer.explorerProvider !== undefined &&
+        /* wallet !== undefined && */
+        /* wallet.signer.explorerProvider !== undefined && */
+        connectionStatus === 'connected' &&
+        explorerProvider !== undefined &&
         tokenPairState !== undefined &&
         removeLiquidityDetails !== undefined &&
         tokenAInfo !== undefined &&
@@ -196,9 +197,9 @@ function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
         }
 
         const result = await removeLiquidity(
-          wallet.signer,
-          wallet.signer.explorerProvider,
-          wallet.address,
+          signer,
+          explorerProvider,
+          account.address,
           tokenPairState,
           amount,
           removeLiquidityDetails.amount0,
@@ -208,6 +209,7 @@ function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
         )
         console.log(`remove liquidity succeed, tx id: ${result.txId}`)
         setTxId(result.txId)
+        updateBalanceForTx(result.txId)
         setRemovingLiquidity(false)
       }
     } catch (error) {
@@ -215,10 +217,10 @@ function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
       setRemovingLiquidity(false)
       console.error(`failed to remove liquidity, error: ${error}`)
     }
-  }, [wallet, tokenPairState, tokenAInfo, tokenBInfo, amount, removeLiquidityDetails, slippage, deadline])
+  }, [connectionStatus, signer, account, explorerProvider, tokenPairState, tokenAInfo, tokenBInfo, amount, removeLiquidityDetails, slippage, deadline, updateBalanceForTx])
 
   const readyToRemoveLiquidity =
-    wallet !== undefined &&
+    connectionStatus === 'connected' &&
     tokenAInfo !== undefined &&
     tokenBInfo !== undefined &&
     amount !== undefined &&
@@ -262,7 +264,7 @@ function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
           buttonText="Swap Coins"
           onClick={redirectToSwap}
         />
-        {wallet === undefined ?
+        {connectionStatus !== 'connected' ?
           <div>
             <Typography variant="h6" color="error" className={classes.error}>
               Your wallet is not connected
@@ -270,7 +272,7 @@ function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
           </div> : null
         }
         <div>
-          <Collapse in={!removingLiquidity && !completed && wallet !== undefined}>
+          <Collapse in={!removingLiquidity && !completed && connectionStatus === 'connected'}>
             {
               <>
                 {tokenPairContent}

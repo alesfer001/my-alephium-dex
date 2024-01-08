@@ -11,6 +11,10 @@ import {
   TokenPairFactoryInstance,
   Router,
   RouterInstance,
+  FeeCollectorPerTokenPairImpl,
+  FeeCollectorPerTokenPairImplInstance,
+  FeeCollectorFactoryImpl,
+  FeeCollectorFactoryImplInstance,
 } from ".";
 import { default as testnetDeployments } from "../.deployments.testnet.json";
 import { default as devnetDeployments } from "../.deployments.devnet.json";
@@ -21,27 +25,41 @@ export type Deployments = {
     TokenPair: DeployContractExecutionResult<TokenPairInstance>;
     TokenPairFactory: DeployContractExecutionResult<TokenPairFactoryInstance>;
     Router: DeployContractExecutionResult<RouterInstance>;
+    FeeCollectorPerTokenPairImpl: DeployContractExecutionResult<FeeCollectorPerTokenPairImplInstance>;
+    FeeCollectorFactoryImpl: DeployContractExecutionResult<FeeCollectorFactoryImplInstance>;
   };
 };
 
 function toDeployments(json: any): Deployments {
   const contracts = {
     TokenPair: {
-      ...json.contracts.TokenPair,
+      ...json.contracts["TokenPair"],
       contractInstance: TokenPair.at(
-        json.contracts.TokenPair.contractInstance.address
+        json.contracts["TokenPair"].contractInstance.address
       ),
     },
     TokenPairFactory: {
-      ...json.contracts.TokenPairFactory,
+      ...json.contracts["TokenPairFactory"],
       contractInstance: TokenPairFactory.at(
-        json.contracts.TokenPairFactory.contractInstance.address
+        json.contracts["TokenPairFactory"].contractInstance.address
       ),
     },
     Router: {
-      ...json.contracts.Router,
+      ...json.contracts["Router"],
       contractInstance: Router.at(
-        json.contracts.Router.contractInstance.address
+        json.contracts["Router"].contractInstance.address
+      ),
+    },
+    FeeCollectorPerTokenPairImpl: {
+      ...json.contracts["FeeCollectorPerTokenPairImpl"],
+      contractInstance: FeeCollectorPerTokenPairImpl.at(
+        json.contracts["FeeCollectorPerTokenPairImpl"].contractInstance.address
+      ),
+    },
+    FeeCollectorFactoryImpl: {
+      ...json.contracts["FeeCollectorFactoryImpl"],
+      contractInstance: FeeCollectorFactoryImpl.at(
+        json.contracts["FeeCollectorFactoryImpl"].contractInstance.address
       ),
     },
   };

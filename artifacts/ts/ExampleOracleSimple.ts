@@ -9,7 +9,7 @@ import {
   TestContractResult,
   HexString,
   ContractFactory,
-  SubscribeOptions,
+  EventSubscribeOptions,
   EventSubscription,
   CallContractParams,
   CallContractResult,
@@ -24,7 +24,8 @@ import {
   ContractInstance,
   getContractEventsCurrentCount,
 } from "@alephium/web3";
-import { default as ExampleOracleSimpleContractJson } from "../examples/example_oracle_simple.ral.json";
+import { default as ExampleOracleSimpleContractJson } from "../examples/ExampleOracleSimple.ral.json";
+import { getContractByCodeHash } from "./contracts";
 
 // Custom types for the contract
 export namespace ExampleOracleSimpleTypes {
@@ -75,6 +76,22 @@ class Factory extends ContractFactory<
   ExampleOracleSimpleInstance,
   ExampleOracleSimpleTypes.Fields
 > {
+  getInitialFieldsWithDefaultValues() {
+    return this.contract.getInitialFieldsWithDefaultValues() as ExampleOracleSimpleTypes.Fields;
+  }
+
+  consts = {
+    Resolution: BigInt(112),
+    Period: BigInt(86400),
+    ErrorCodes: {
+      FullDivOverflow: BigInt(0),
+      DivByZero: BigInt(1),
+      FractionOverflow: BigInt(2),
+      PeriodNotElapsed: BigInt(3),
+      InvalidToken: BigInt(4),
+    },
+  };
+
   at(address: string): ExampleOracleSimpleInstance {
     return new ExampleOracleSimpleInstance(address);
   }
@@ -136,7 +153,7 @@ export const ExampleOracleSimple = new Factory(
   Contract.fromJson(
     ExampleOracleSimpleContractJson,
     "",
-    "db728f2254d74eb30dbf85b4dc55e0d5a00bdc0c7b09c6cd94d8b2128f220bc8"
+    "77c214087d18764740b2479fc13342959a21a02a36977c0d998667644200071a"
   )
 );
 
@@ -154,22 +171,46 @@ export class ExampleOracleSimpleInstance extends ContractInstance {
     fullMul: async (
       params: ExampleOracleSimpleTypes.CallMethodParams<"fullMul">
     ): Promise<ExampleOracleSimpleTypes.CallMethodResult<"fullMul">> => {
-      return callMethod(ExampleOracleSimple, this, "fullMul", params);
+      return callMethod(
+        ExampleOracleSimple,
+        this,
+        "fullMul",
+        params,
+        getContractByCodeHash
+      );
     },
     mulDiv: async (
       params: ExampleOracleSimpleTypes.CallMethodParams<"mulDiv">
     ): Promise<ExampleOracleSimpleTypes.CallMethodResult<"mulDiv">> => {
-      return callMethod(ExampleOracleSimple, this, "mulDiv", params);
+      return callMethod(
+        ExampleOracleSimple,
+        this,
+        "mulDiv",
+        params,
+        getContractByCodeHash
+      );
     },
     fraction: async (
       params: ExampleOracleSimpleTypes.CallMethodParams<"fraction">
     ): Promise<ExampleOracleSimpleTypes.CallMethodResult<"fraction">> => {
-      return callMethod(ExampleOracleSimple, this, "fraction", params);
+      return callMethod(
+        ExampleOracleSimple,
+        this,
+        "fraction",
+        params,
+        getContractByCodeHash
+      );
     },
     consult: async (
       params: ExampleOracleSimpleTypes.CallMethodParams<"consult">
     ): Promise<ExampleOracleSimpleTypes.CallMethodResult<"consult">> => {
-      return callMethod(ExampleOracleSimple, this, "consult", params);
+      return callMethod(
+        ExampleOracleSimple,
+        this,
+        "consult",
+        params,
+        getContractByCodeHash
+      );
     },
   };
 
@@ -179,7 +220,8 @@ export class ExampleOracleSimpleInstance extends ContractInstance {
     return (await multicallMethods(
       ExampleOracleSimple,
       this,
-      calls
+      calls,
+      getContractByCodeHash
     )) as ExampleOracleSimpleTypes.MultiCallResults<Calls>;
   }
 }

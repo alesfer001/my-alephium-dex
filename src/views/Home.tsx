@@ -2,15 +2,18 @@ import { makeStyles, AppBar, Toolbar, Link, Hidden } from "@material-ui/core";
 import { NavLink, Switch, Route, Redirect } from "react-router-dom";
 import { COLORS } from "../muiTheme";
 import Swap from "../components/Swap";
-import UserLiquidity from "../components/UserLiquidity";
-import Pool from "../components/Pools";
-import { AlephiumConnectButton } from "@alephium/web3-react";
-import { useDispatch } from "react-redux"
-import { reset as resetSwapState } from "../state/swap/actions";
-import { reset as resetMintState } from "../state/mint/actions";
 import logo from "../../images/simplephium-logo.png";
 import ExchangeInfo from "../components/ExchangeInfo";
 import LandingPage from "../components/LandingPage";
+import UserLiquidity from "../components/UserLiquidity";
+import Pool from "../components/Pools";
+import { AlephiumConnectButton, useWallet } from "@alephium/web3-react";
+import TransactionSettings from "../components/Settings";
+import { useDispatch } from "react-redux"
+import { reset as resetSwapState } from "../state/swap/actions";
+import { reset as resetMintState } from "../state/mint/actions";
+import { useEffect } from "react";
+import { web3 } from "@alephium/web3";
 
 const useStyles = makeStyles((theme) => ({
   spacer: {
@@ -38,6 +41,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   bg: {
+    /* background:
+     *   "linear-gradient(160deg, rgba(34,37,58,.1) 0%, rgba(69,73,89,.1) 33%, rgba(34,37,58,.1) 66%, rgba(49,52,71,.1) 100%), linear-gradient(45deg, rgba(76,34,128,.1) 0%, rgba(69,49,115,.1) 20%, rgba(0,104,70,.1) 100%)", */
     display: "flex",
     flexDirection: "column",
     minHeight: "100vh",
@@ -54,6 +59,13 @@ const useStyles = makeStyles((theme) => ({
 function Home() {
   const classes = useStyles();
   const dispatch = useDispatch()
+  const wallet = useWallet()
+
+  useEffect(() => {
+    if (wallet?.nodeProvider !== undefined) {
+      web3.setCurrentNodeProvider(wallet.nodeProvider)
+    }
+  }, [wallet?.nodeProvider])
 
   return (
     <div className={classes.bg}>
@@ -109,13 +121,19 @@ function Home() {
                 Docs
               </Link>
             </div>
+            {/* <div style={{ position: "absolute", top: "10px", right: "30px" }}> */}
+              {/* <AlephiumConnectButton label="Connect" /> */}
+              {/* </div> */}
+      {/* <ExchangeInfo /> */}
           </Hidden>
-          <div style={{ position: "absolute", top: "10px", right: "30px" }}>
-            <AlephiumConnectButton label="Connect" />
+          <div style={{ position: "absolute", top: "6px", right: "30px" }}>
+            <TransactionSettings />
+          </div>
+          <div style={{ position: "absolute", top: "10px", right: "80px" }}>
+            <AlephiumConnectButton />
           </div>
         </Toolbar>
       </AppBar>
-      {/* <ExchangeInfo /> */}
       <Switch>
         <Route exact path="/">
           <LandingPage />

@@ -6,11 +6,11 @@ import { commonStyles } from "./style";
 import { TokenInfo } from "@alephium/token-list";
 import { useTokenPairState } from "../state/useTokenPairState";
 import TokenSelectDialog from "./TokenSelectDialog";
-import { useAlephiumWallet, useAvailableBalances } from "../hooks/useAlephiumWallet";
+import { useAvailableBalances } from "../hooks/useAvailableBalance";
 import { DetailItem } from "./DetailsItem";
 import BigNumber from "bignumber.js";
 import AddPool from './AddPool';
-import { getBlockflowChainInfo } from "../utils/getpools";
+import { useWallet } from "@alephium/web3-react";
 
 function Pool() {
   const commonClasses = commonStyles()
@@ -18,10 +18,8 @@ function Pool() {
   const [tokenAInfo, setTokenAInfo] = useState<TokenInfo | undefined>(undefined)
   const [tokenBInfo, setTokenBInfo] = useState<TokenInfo | undefined>(undefined)
   const { tokenPairState, getTokenPairStateError } = useTokenPairState(tokenAInfo, tokenBInfo)
-  const wallet = useAlephiumWallet()
-  const balance = useAvailableBalances()
-
-  getBlockflowChainInfo()
+  const { connectionStatus } = useWallet()
+  const { balance } = useAvailableBalances()
 
   const handleAddPool = () => {
     setShowAddPool(true);
@@ -79,14 +77,14 @@ function Pool() {
       <div className={commonClasses.spacer} />
       <Paper className={commonClasses.mainPaper}>
         <div>
-          {wallet === undefined ?
+          {connectionStatus !== 'connected' ?
             <div>
               <Typography variant="h6" color="error" className={commonClasses.error}>
                 Your wallet is not connected
               </Typography>
             </div> : null
           }
-          <Collapse in={wallet !== undefined}>
+          <Collapse in={connectionStatus === 'connected'}>
             {
               <>
                 {tokenPairContent}

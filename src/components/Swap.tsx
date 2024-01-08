@@ -6,7 +6,7 @@ import TokenSelectDialog from "./TokenSelectDialog";
 import HoverIcon from "./HoverIcon";
 import NumberTextField from "./NumberTextField";
 import { bigIntToString, getSwapDetails, swap, SwapDetails, tryGetBalance } from "../utils/dex";
-import { useAlephiumWallet, useAvailableBalances } from "../hooks/useAlephiumWallet";
+import { useAvailableBalances } from "../hooks/useAvailableBalance";
 import { useDeadline } from "../hooks/useDeadline";
 import { useSlippageTolerance } from "../hooks/useSlippageTolerance";
 import { DEFAULT_SLIPPAGE } from "../state/settings/reducer";
@@ -22,6 +22,7 @@ import TransactionSettings from "../components/Settings";
 import { TokenList } from "../utils/dex";
 import { useEffect } from 'react';
 
+import { useWallet } from "@alephium/web3-react";
 
 function Swap() {
   const classes = commonStyles();
@@ -31,12 +32,12 @@ function Swap() {
   const [error, setError] = useState<string | undefined>(undefined)
   const [slippage,] = useSlippageTolerance()
   const [deadline,] = useDeadline()
-  const wallet = useAlephiumWallet()
-  const balance = useAvailableBalances()
 
   useEffect(() => {
       dispatch(selectTokenIn(TokenList[0]));
   }, []);
+  const { connectionStatus, signer, account, explorerProvider } = useWallet()
+  const { balance, updateBalanceForTx } = useAvailableBalances()
 
   const handleTokenInChange = useCallback((tokenInfo) => {
     dispatch(selectTokenIn(tokenInfo))
@@ -110,21 +111,12 @@ function Swap() {
             disabled={!!swapping || !!completed}
             placeholder="0"
           />
-          {/* <Button
-              variant="contained"
-              color="primary"
-              className={classes.maxButton}
-              onClick={handleMaxButtonClick}
-              >
-              Max
-              </Button> */}
         </div>
       <TokenSelectDialog
         tokenId={tokenInInfo?.id}
         counterpart={tokenOutInfo?.id}
         onChange={handleTokenInChange}
         tokenBalances={balance}
-        style2={true}
       />
       </div>
       <Typography className={classes.balance}>
@@ -148,13 +140,6 @@ function Swap() {
             disabled={!!swapping || !!completed}
             placeholder="0"
           />
-          {/* <Button
-              variant="contained"
-              color="primary"
-              disabled
-              className={classes.hiddenButton}
-              >
-              </Button> */}
         </div>
         <TokenSelectDialog
           tokenId={tokenOutInfo?.id}
@@ -172,17 +157,18 @@ function Swap() {
   const handleSwap = useCallback(async () => {
     try {
       setSwapping(true)
-      if (wallet !== undefined && wallet.signer.explorerProvider !== undefined && swapDetails !== undefined) {
+      if (connectionStatus === 'connected' && explorerProvider !== undefined && swapDetails !== undefined) {
         const result = await swap(
           swapDetails,
           balance,
-          wallet.signer,
-          wallet.signer.explorerProvider,
-          wallet.address,
+          signer,
+          explorerProvider,
+          account.address,
           deadline
         )
         console.log(`swap tx submitted, tx id: ${result.txId}`)
         setTxId(result.txId)
+        updateBalanceForTx(result.txId)
         setSwapping(false)
       }
     } catch (error) {
@@ -190,10 +176,10 @@ function Swap() {
       setSwapping(false)
       console.error(`failed to swap, error: ${error}`)
     }
-  }, [wallet, swapDetails, slippage, deadline, balance])
+  }, [connectionStatus, account, explorerProvider, signer, swapDetails, slippage, deadline, balance, updateBalanceForTx])
 
   const readyToSwap =
-    wallet !== undefined &&
+    connectionStatus === 'connected' &&
     !swapping && !completed &&
     error === undefined &&
     swapDetails !== undefined
@@ -205,7 +191,7 @@ function Swap() {
         classes.gradientButton + (!readyToSwap ? " " + classes.disabled : "")
       }
     >
-      {wallet ? "Swap" : "Your wallet is not connected"}
+      {connectionStatus === 'connected' ? "Swap" : "Your wallet is not connected"}
     </ButtonWithLoader>
   );
 
@@ -217,7 +203,11 @@ function Swap() {
         </Typography>
         <TransactionSettings />
       </div>
-      <div className={classes.spacer} />
+      {/* <div className={classes.titleBar}></div> */}
+      {/* <Typography variant="h4" color="textSecondary">
+          Swap
+          </Typography> */}
+      {/* <div className={classes.spacer} /> */}
       <Paper className={classes.mainPaper}>
         <WaitingForTxSubmission
           open={!!swapping && !completed}
@@ -230,7 +220,7 @@ function Swap() {
           onClick={handleReset}
         />
         <div>
-          <Collapse in={!swapping && !completed}>
+          <Collapse in={!swapping && !completed && connectionStatus === 'connected'}>
             {
               <>
                 {sourceContent}

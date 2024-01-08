@@ -9,7 +9,7 @@ import {
   TestContractResult,
   HexString,
   ContractFactory,
-  SubscribeOptions,
+  EventSubscribeOptions,
   EventSubscription,
   CallContractParams,
   CallContractResult,
@@ -24,7 +24,8 @@ import {
   ContractInstance,
   getContractEventsCurrentCount,
 } from "@alephium/web3";
-import { default as FullMathTestContractJson } from "../examples/full_math_test.ral.json";
+import { default as FullMathTestContractJson } from "../examples/FullMathTest.ral.json";
+import { getContractByCodeHash } from "./contracts";
 
 // Custom types for the contract
 export namespace FullMathTestTypes {
@@ -59,6 +60,17 @@ export namespace FullMathTestTypes {
 }
 
 class Factory extends ContractFactory<FullMathTestInstance, {}> {
+  consts = {
+    Resolution: BigInt(112),
+    ErrorCodes: {
+      FullDivOverflow: BigInt(0),
+      DivByZero: BigInt(1),
+      FractionOverflow: BigInt(2),
+      PeriodNotElapsed: BigInt(3),
+      InvalidToken: BigInt(4),
+    },
+  };
+
   at(address: string): FullMathTestInstance {
     return new FullMathTestInstance(address);
   }
@@ -117,17 +129,35 @@ export class FullMathTestInstance extends ContractInstance {
     fullMul: async (
       params: FullMathTestTypes.CallMethodParams<"fullMul">
     ): Promise<FullMathTestTypes.CallMethodResult<"fullMul">> => {
-      return callMethod(FullMathTest, this, "fullMul", params);
+      return callMethod(
+        FullMathTest,
+        this,
+        "fullMul",
+        params,
+        getContractByCodeHash
+      );
     },
     mulDiv: async (
       params: FullMathTestTypes.CallMethodParams<"mulDiv">
     ): Promise<FullMathTestTypes.CallMethodResult<"mulDiv">> => {
-      return callMethod(FullMathTest, this, "mulDiv", params);
+      return callMethod(
+        FullMathTest,
+        this,
+        "mulDiv",
+        params,
+        getContractByCodeHash
+      );
     },
     fraction: async (
       params: FullMathTestTypes.CallMethodParams<"fraction">
     ): Promise<FullMathTestTypes.CallMethodResult<"fraction">> => {
-      return callMethod(FullMathTest, this, "fraction", params);
+      return callMethod(
+        FullMathTest,
+        this,
+        "fraction",
+        params,
+        getContractByCodeHash
+      );
     },
   };
 
@@ -137,7 +167,8 @@ export class FullMathTestInstance extends ContractInstance {
     return (await multicallMethods(
       FullMathTest,
       this,
-      calls
+      calls,
+      getContractByCodeHash
     )) as FullMathTestTypes.MultiCallResults<Calls>;
   }
 }

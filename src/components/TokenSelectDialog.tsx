@@ -38,14 +38,21 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     width: "40%",
     padding: ".25rem .5rem",
+    /* height: 25, */
+    /* width: "max-content", */
+    /* padding: ".5rem", */
+    /* background: */
+    /* "linear-gradient(90deg, rgba(69,74,117,.2) 0%, rgba(138,146,178,.2) 33%, rgba(69,74,117,.5) 66%, rgba(98,104,143,.5) 100%), linear-gradient(45deg, rgba(153,69,255,.1) 0%, rgba(121,98,231,.1) 20%, rgba(0,209,140,.1) 100%)", */
   },
   medium: {
     padding: "1.5rem 3rem",
   },
   style2: {
-
+    background:
+      "linear-gradient(270deg, rgba(69,74,117,.2) 0%, rgba(138,146,178,.2) 33%, rgba(69,74,117,.5) 66%, rgba(98,104,143,.5) 100%), linear-gradient(45deg, rgba(153,69,255,.1) 0%, rgba(121,98,231,.1) 20%, rgba(0,209,140,.1) 100%)",
   },
   selectedSymbol: {
+    /* fontFamily: "Monospace", */
     margin: ".25rem .5rem",
     marginLeft: "1rem",
     fontSize: "15px"

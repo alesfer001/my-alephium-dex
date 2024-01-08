@@ -9,7 +9,7 @@ import {
   TestContractResult,
   HexString,
   ContractFactory,
-  SubscribeOptions,
+  EventSubscribeOptions,
   EventSubscription,
   CallContractParams,
   CallContractResult,
@@ -24,11 +24,13 @@ import {
   ContractInstance,
   getContractEventsCurrentCount,
 } from "@alephium/web3";
-import { default as TokenPairContractJson } from "../dex/token_pair.ral.json";
+import { default as TokenPairContractJson } from "../dex/TokenPair.ral.json";
+import { getContractByCodeHash } from "./contracts";
 
 // Custom types for the contract
 export namespace TokenPairTypes {
   export type Fields = {
+    tokenPairFactory: HexString;
     token0Id: HexString;
     token1Id: HexString;
     reserve0: bigint;
@@ -37,6 +39,8 @@ export namespace TokenPairTypes {
     price0CumulativeLast: bigint;
     price1CumulativeLast: bigint;
     totalSupply: bigint;
+    kLast: bigint;
+    feeCollectorId: HexString;
   };
 
   export type State = ContractState<Fields>;
@@ -138,6 +142,35 @@ class Factory extends ContractFactory<
   TokenPairInstance,
   TokenPairTypes.Fields
 > {
+  getInitialFieldsWithDefaultValues() {
+    return this.contract.getInitialFieldsWithDefaultValues() as TokenPairTypes.Fields;
+  }
+
+  eventIndex = { Mint: 0, Burn: 1, Swap: 2 };
+  consts = {
+    MINIMUM_LIQUIDITY: BigInt(1000),
+    ErrorCodes: {
+      ReserveOverflow: BigInt(0),
+      InsufficientInitLiquidity: BigInt(1),
+      InsufficientLiquidityMinted: BigInt(2),
+      InsufficientLiquidityBurned: BigInt(3),
+      InvalidToAddress: BigInt(4),
+      InsufficientLiquidity: BigInt(5),
+      InvalidTokenInId: BigInt(6),
+      InvalidCalleeId: BigInt(7),
+      InvalidK: BigInt(8),
+      InsufficientOutputAmount: BigInt(9),
+      InsufficientInputAmount: BigInt(10),
+      IdenticalTokenIds: BigInt(11),
+      Expired: BigInt(12),
+      InsufficientToken0Amount: BigInt(13),
+      InsufficientToken1Amount: BigInt(14),
+      TokenNotExist: BigInt(15),
+      InvalidCaller: BigInt(16),
+      FeeCollectorNotEnabled: BigInt(17),
+    },
+  };
+
   at(address: string): TokenPairInstance {
     return new TokenPairInstance(address);
   }
@@ -176,6 +209,11 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResult<bigint>> => {
       return testMethod(this, "sqrt", params);
     },
+    setFeeCollectorId: async (
+      params: TestContractParams<TokenPairTypes.Fields, { id: HexString }>
+    ): Promise<TestContractResult<null>> => {
+      return testMethod(this, "setFeeCollectorId", params);
+    },
     getTokenPair: async (
       params: Omit<TestContractParams<TokenPairTypes.Fields, never>, "testArgs">
     ): Promise<TestContractResult<[HexString, HexString]>> => {
@@ -209,6 +247,14 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "update", params);
     },
+    mintFee: async (
+      params: TestContractParams<
+        TokenPairTypes.Fields,
+        { reserve0_: bigint; reserve1_: bigint }
+      >
+    ): Promise<TestContractResult<[boolean, bigint]>> => {
+      return testMethod(this, "mintFee", params);
+    },
     mint: async (
       params: TestContractParams<
         TokenPairTypes.Fields,
@@ -240,6 +286,16 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "swap", params);
     },
+    collectFeeManually: async (
+      params: Omit<TestContractParams<TokenPairTypes.Fields, never>, "testArgs">
+    ): Promise<TestContractResult<null>> => {
+      return testMethod(this, "collectFeeManually", params);
+    },
+    collectFeeAndUpdateKLast: async (
+      params: TestContractParams<TokenPairTypes.Fields, { feeAmount: bigint }>
+    ): Promise<TestContractResult<null>> => {
+      return testMethod(this, "collectFeeAndUpdateKLast", params);
+    },
   };
 }
 
@@ -248,7 +304,7 @@ export const TokenPair = new Factory(
   Contract.fromJson(
     TokenPairContractJson,
     "",
-    "dca32d225dc6a4aa43fdb39d08069ddc32ee983be053d7494de0b5f54dc32500"
+    "4a98763809adb6e899e3e7864e6d5dcb60c6fd0806f1264c3596b482021035f2"
   )
 );
 
@@ -267,7 +323,7 @@ export class TokenPairInstance extends ContractInstance {
   }
 
   subscribeMintEvent(
-    options: SubscribeOptions<TokenPairTypes.MintEvent>,
+    options: EventSubscribeOptions<TokenPairTypes.MintEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(
@@ -280,7 +336,7 @@ export class TokenPairInstance extends ContractInstance {
   }
 
   subscribeBurnEvent(
-    options: SubscribeOptions<TokenPairTypes.BurnEvent>,
+    options: EventSubscribeOptions<TokenPairTypes.BurnEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(
@@ -293,7 +349,7 @@ export class TokenPairInstance extends ContractInstance {
   }
 
   subscribeSwapEvent(
-    options: SubscribeOptions<TokenPairTypes.SwapEvent>,
+    options: EventSubscribeOptions<TokenPairTypes.SwapEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(
@@ -306,7 +362,7 @@ export class TokenPairInstance extends ContractInstance {
   }
 
   subscribeAllEvents(
-    options: SubscribeOptions<
+    options: EventSubscribeOptions<
       | TokenPairTypes.MintEvent
       | TokenPairTypes.BurnEvent
       | TokenPairTypes.SwapEvent
@@ -329,7 +385,8 @@ export class TokenPairInstance extends ContractInstance {
         TokenPair,
         this,
         "getSymbol",
-        params === undefined ? {} : params
+        params === undefined ? {} : params,
+        getContractByCodeHash
       );
     },
     getName: async (
@@ -339,7 +396,8 @@ export class TokenPairInstance extends ContractInstance {
         TokenPair,
         this,
         "getName",
-        params === undefined ? {} : params
+        params === undefined ? {} : params,
+        getContractByCodeHash
       );
     },
     getDecimals: async (
@@ -349,7 +407,8 @@ export class TokenPairInstance extends ContractInstance {
         TokenPair,
         this,
         "getDecimals",
-        params === undefined ? {} : params
+        params === undefined ? {} : params,
+        getContractByCodeHash
       );
     },
     getTotalSupply: async (
@@ -359,18 +418,25 @@ export class TokenPairInstance extends ContractInstance {
         TokenPair,
         this,
         "getTotalSupply",
-        params === undefined ? {} : params
+        params === undefined ? {} : params,
+        getContractByCodeHash
       );
     },
     uqdiv: async (
       params: TokenPairTypes.CallMethodParams<"uqdiv">
     ): Promise<TokenPairTypes.CallMethodResult<"uqdiv">> => {
-      return callMethod(TokenPair, this, "uqdiv", params);
+      return callMethod(
+        TokenPair,
+        this,
+        "uqdiv",
+        params,
+        getContractByCodeHash
+      );
     },
     sqrt: async (
       params: TokenPairTypes.CallMethodParams<"sqrt">
     ): Promise<TokenPairTypes.CallMethodResult<"sqrt">> => {
-      return callMethod(TokenPair, this, "sqrt", params);
+      return callMethod(TokenPair, this, "sqrt", params, getContractByCodeHash);
     },
     getTokenPair: async (
       params?: TokenPairTypes.CallMethodParams<"getTokenPair">
@@ -379,7 +445,8 @@ export class TokenPairInstance extends ContractInstance {
         TokenPair,
         this,
         "getTokenPair",
-        params === undefined ? {} : params
+        params === undefined ? {} : params,
+        getContractByCodeHash
       );
     },
     getReserves: async (
@@ -389,7 +456,8 @@ export class TokenPairInstance extends ContractInstance {
         TokenPair,
         this,
         "getReserves",
-        params === undefined ? {} : params
+        params === undefined ? {} : params,
+        getContractByCodeHash
       );
     },
     getBlockTimeStampLast: async (
@@ -399,7 +467,8 @@ export class TokenPairInstance extends ContractInstance {
         TokenPair,
         this,
         "getBlockTimeStampLast",
-        params === undefined ? {} : params
+        params === undefined ? {} : params,
+        getContractByCodeHash
       );
     },
     getPrice0CumulativeLast: async (
@@ -409,7 +478,8 @@ export class TokenPairInstance extends ContractInstance {
         TokenPair,
         this,
         "getPrice0CumulativeLast",
-        params === undefined ? {} : params
+        params === undefined ? {} : params,
+        getContractByCodeHash
       );
     },
     getPrice1CumulativeLast: async (
@@ -419,18 +489,19 @@ export class TokenPairInstance extends ContractInstance {
         TokenPair,
         this,
         "getPrice1CumulativeLast",
-        params === undefined ? {} : params
+        params === undefined ? {} : params,
+        getContractByCodeHash
       );
     },
     mint: async (
       params: TokenPairTypes.CallMethodParams<"mint">
     ): Promise<TokenPairTypes.CallMethodResult<"mint">> => {
-      return callMethod(TokenPair, this, "mint", params);
+      return callMethod(TokenPair, this, "mint", params, getContractByCodeHash);
     },
     burn: async (
       params: TokenPairTypes.CallMethodParams<"burn">
     ): Promise<TokenPairTypes.CallMethodResult<"burn">> => {
-      return callMethod(TokenPair, this, "burn", params);
+      return callMethod(TokenPair, this, "burn", params, getContractByCodeHash);
     },
   };
 
@@ -440,7 +511,8 @@ export class TokenPairInstance extends ContractInstance {
     return (await multicallMethods(
       TokenPair,
       this,
-      calls
+      calls,
+      getContractByCodeHash
     )) as TokenPairTypes.MultiCallResults<Calls>;
   }
 }

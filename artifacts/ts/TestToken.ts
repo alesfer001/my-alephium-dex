@@ -9,7 +9,7 @@ import {
   TestContractResult,
   HexString,
   ContractFactory,
-  SubscribeOptions,
+  EventSubscribeOptions,
   EventSubscription,
   CallContractParams,
   CallContractResult,
@@ -24,7 +24,8 @@ import {
   ContractInstance,
   getContractEventsCurrentCount,
 } from "@alephium/web3";
-import { default as TestTokenContractJson } from "../test/test_token.ral.json";
+import { default as TestTokenContractJson } from "../test/TestToken.ral.json";
+import { getContractByCodeHash } from "./contracts";
 
 // Custom types for the contract
 export namespace TestTokenTypes {
@@ -73,6 +74,10 @@ class Factory extends ContractFactory<
   TestTokenInstance,
   TestTokenTypes.Fields
 > {
+  getInitialFieldsWithDefaultValues() {
+    return this.contract.getInitialFieldsWithDefaultValues() as TestTokenTypes.Fields;
+  }
+
   at(address: string): TestTokenInstance {
     return new TestTokenInstance(address);
   }
@@ -136,7 +141,8 @@ export class TestTokenInstance extends ContractInstance {
         TestToken,
         this,
         "getSymbol",
-        params === undefined ? {} : params
+        params === undefined ? {} : params,
+        getContractByCodeHash
       );
     },
     getName: async (
@@ -146,7 +152,8 @@ export class TestTokenInstance extends ContractInstance {
         TestToken,
         this,
         "getName",
-        params === undefined ? {} : params
+        params === undefined ? {} : params,
+        getContractByCodeHash
       );
     },
     getDecimals: async (
@@ -156,7 +163,8 @@ export class TestTokenInstance extends ContractInstance {
         TestToken,
         this,
         "getDecimals",
-        params === undefined ? {} : params
+        params === undefined ? {} : params,
+        getContractByCodeHash
       );
     },
     getTotalSupply: async (
@@ -166,7 +174,8 @@ export class TestTokenInstance extends ContractInstance {
         TestToken,
         this,
         "getTotalSupply",
-        params === undefined ? {} : params
+        params === undefined ? {} : params,
+        getContractByCodeHash
       );
     },
   };
@@ -177,7 +186,8 @@ export class TestTokenInstance extends ContractInstance {
     return (await multicallMethods(
       TestToken,
       this,
-      calls
+      calls,
+      getContractByCodeHash
     )) as TestTokenTypes.MultiCallResults<Calls>;
   }
 }

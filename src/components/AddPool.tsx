@@ -5,11 +5,12 @@ import { TokenInfo } from "@alephium/token-list"
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ButtonWithLoader from "./ButtonWithLoader";
 import { tokenPairExist, createTokenPair } from "../utils/dex";
-import { useAlephiumWallet, useAvailableBalances } from "../hooks/useAlephiumWallet";
+import { useAvailableBalances } from "../hooks/useAvailableBalance";
 import { commonStyles } from "./style";
 import TokenSelectDialog from "./TokenSelectDialog";
 import { useHistory } from "react-router-dom";
 import { TransactionSubmitted, WaitingForTxSubmission } from "./Transactions";
+import { useWallet } from "@alephium/web3-react";
 
 function AddPool({ goBack }) {
   const commonClasses = commonStyles();
@@ -18,15 +19,15 @@ function AddPool({ goBack }) {
   const [txId, setTxId] = useState<string | undefined>(undefined)
   const [addingPool, setAddingPool] = useState<boolean>(false)
   const [error, setError] = useState<string | undefined>(undefined)
-  const wallet = useAlephiumWallet()
-  const balance = useAvailableBalances()
+  const { account, signer, connectionStatus, nodeProvider, explorerProvider } = useWallet()
+  const { balance, updateBalanceForTx } = useAvailableBalances()
   const history = useHistory()
 
   useEffect(() => {
     async function checkContractExist() {
-      if (tokenAInfo !== undefined && tokenBInfo !== undefined && wallet !== undefined) {
+      if (tokenAInfo !== undefined && tokenBInfo !== undefined && connectionStatus === 'connected' && nodeProvider !== undefined) {
         try {
-          const exist = await tokenPairExist(wallet.nodeProvider, tokenAInfo.id, tokenBInfo.id)
+          const exist = await tokenPairExist(nodeProvider, tokenAInfo.id, tokenBInfo.id)
           if (exist) setError(`token pair already exist`)
         } catch (err) {
           setError(`${err}`)
@@ -36,7 +37,7 @@ function AddPool({ goBack }) {
 
     setError(undefined)
     checkContractExist()
-  }, [tokenAInfo, tokenBInfo, wallet])
+  }, [tokenAInfo, tokenBInfo, nodeProvider, connectionStatus])
 
   const handleTokenAChange = useCallback((tokenInfo) => {
     setTokenAInfo(tokenInfo)
@@ -79,16 +80,17 @@ function AddPool({ goBack }) {
   const handleAddPool = useCallback(async () => {
     try {
       setAddingPool(true)
-      if (wallet !== undefined && wallet.signer.explorerProvider !== undefined && tokenAInfo !== undefined && tokenBInfo !== undefined) {
+      if (connectionStatus === 'connected' && explorerProvider !== undefined && tokenAInfo !== undefined && tokenBInfo !== undefined) {
         const result = await createTokenPair(
-          wallet.signer,
-          wallet.signer.explorerProvider,
-          wallet.address,
+          signer,
+          explorerProvider,
+          account.address,
           tokenAInfo.id,
           tokenBInfo.id
         )
         console.log(`add pool succeed, tx id: ${result.txId}, token pair id: ${result.tokenPairId}`)
         setTxId(result.txId)
+        updateBalanceForTx(result.txId)
         setAddingPool(false)
       }
     } catch (error) {
@@ -96,10 +98,10 @@ function AddPool({ goBack }) {
       setAddingPool(false)
       console.error(`failed to add pool, error: ${error}`)
     }
-  }, [wallet, tokenAInfo, tokenBInfo])
+  }, [signer, account, connectionStatus, explorerProvider, tokenAInfo, tokenBInfo, updateBalanceForTx])
 
   const readyToAddPool =
-    wallet !== undefined &&
+    connectionStatus === 'connected'
     tokenAInfo !== undefined &&
     tokenBInfo !== undefined &&
     !addingPool && !completed && 
@@ -139,7 +141,7 @@ function AddPool({ goBack }) {
           buttonText="Add Liquidity"
           onClick={redirectToAddLiquidity}
         />
-        {wallet === undefined ?
+        {connectionStatus !== 'connected' ?
           <div>
             <Typography variant="h6" color="error" className={commonClasses.error}>
               Your wallet is not connected
@@ -147,7 +149,7 @@ function AddPool({ goBack }) {
           </div> : null
         }
         <div>
-          <Collapse in={!addingPool && !completed && wallet !== undefined}>
+          <Collapse in={!addingPool && !completed && connectionStatus === 'connected'}>
             {
               <>
                 {tokenPairContent}
