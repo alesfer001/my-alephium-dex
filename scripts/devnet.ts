@@ -164,7 +164,7 @@ export async function getCreatedContractId(provider: NodeProvider, txId: string,
   return binToHex(contractIdFromAddress(address))
 }
 
-function getSigner(privateKeys: string[], index: number) {
+function getSigner(privateKeys: string[] | string, index: number) {
   if (privateKeys.length === 0) {
     throw new Error('No private key specified')
   }
