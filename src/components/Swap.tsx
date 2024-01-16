@@ -172,7 +172,12 @@ function Swap() {
         setSwapping(false)
       }
     } catch (error) {
-      setError(`${error}`)
+      if (error instanceof Error && error.message.includes("User abort")) {
+        console.log("Swap aborted by the user")
+      }
+      else {
+        setError(`${error}`)
+      }
       setSwapping(false)
       console.error(`failed to swap, error: ${error}`)
     }
@@ -220,7 +225,7 @@ function Swap() {
           onClick={handleReset}
         />
         <div>
-          <Collapse in={!swapping && !completed && connectionStatus === 'connected'}>
+          <Collapse in={!swapping && !completed}>
             {
               <>
                 {sourceContent}

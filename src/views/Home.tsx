@@ -121,16 +121,10 @@ function Home() {
                 Docs
               </Link>
             </div>
-            {/* <div style={{ position: "absolute", top: "10px", right: "30px" }}> */}
-              {/* <AlephiumConnectButton label="Connect" /> */}
-              {/* </div> */}
-      {/* <ExchangeInfo /> */}
+            {/* <ExchangeInfo /> */}
           </Hidden>
-          <div style={{ position: "absolute", top: "6px", right: "30px" }}>
-            <TransactionSettings />
-          </div>
-          <div style={{ position: "absolute", top: "10px", right: "80px" }}>
-            <AlephiumConnectButton />
+          <div style={{ position: "absolute", top: "10px", right: "30px" }}>
+            <AlephiumConnectButton label="Connect" />
           </div>
         </Toolbar>
       </AppBar>
