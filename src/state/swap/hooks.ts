@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { getAmountIn, getAmountOut, TokenPairState, tryBigIntToString, tryStringToBigInt } from '../../utils/dex'
+import { getAmountIn, getAmountOut, TokenPairState, tryBigIntToString, tryStringToBigInt, unPrettifyTokenAmount } from '../../utils/dex'
 import { selectSwapState } from './selectors'
 import { useMemo } from 'react'
 import { useTokenPairState } from '../useTokenPairState'
@@ -50,8 +50,8 @@ export function useDerivedSwapInfo(setError: (err: string | undefined) => void):
 
   const [tokenInInput, tokenOutInput, tokenInAmount, tokenOutAmount] = useMemo(() => {
     try {
-      const tokenInInput = lastInput === 'TokenIn' ? inputValue : tryBigIntToString(swapAmount, tokenInInfo?.decimals)
-      const tokenOutInput = lastInput === 'TokenOut' ? inputValue : tryBigIntToString(swapAmount, tokenOutInfo?.decimals)
+      const tokenInInput = lastInput === 'TokenIn' ? inputValue : unPrettifyTokenAmount(tryBigIntToString(swapAmount, tokenInInfo?.decimals))
+      const tokenOutInput = lastInput === 'TokenOut' ? inputValue : unPrettifyTokenAmount(tryBigIntToString(swapAmount, tokenOutInfo?.decimals))
       const tokenInAmount = lastInput === 'TokenIn' ? parsedAmount : swapAmount
       const tokenOutAmount = lastInput === 'TokenOut' ? parsedAmount : swapAmount
       return [tokenInInput, tokenOutInput, tokenInAmount, tokenOutAmount]

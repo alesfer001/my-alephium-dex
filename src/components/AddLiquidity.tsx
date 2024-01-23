@@ -84,24 +84,35 @@ function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
 
   const handleMaxAButtonClick = () => {
     const hasLiquidity = tokenPairState !== undefined && tokenPairState.reserve0 > 0n
-    dispatch(typeInput({ type: 'TokenA', value: tokenABalance ? tokenABalance : '0', hasLiquidity }))
+    if (tokenABalance) {
+      const intValue = parseInt(tokenABalance.split(',').join(''), 10);
+      const valueStr = isNaN(intValue) ? '0' : intValue.toString();
+
+      dispatch(typeInput({ type: 'TokenA', value: valueStr, hasLiquidity }))
+    }
+    else {
+      console.log("tokenABalance is undefined");
+      dispatch(typeInput({ type: 'TokenA', value: '0', hasLiquidity }));
+    }
   };
 
   const handleMaxBButtonClick = () => {
     const hasLiquidity = tokenPairState !== undefined && tokenPairState.reserve0 > 0n
-    dispatch(typeInput({ type: 'TokenB', value: tokenBBalance ? tokenBBalance : '0', hasLiquidity }))
+    if (tokenBBalance) {
+      const intValue = parseInt(tokenBBalance.split(',').join(''), 10);
+      const valueStr = isNaN(intValue) ? '0' : intValue.toString();
+
+      dispatch(typeInput({ type: 'TokenB', value: valueStr, hasLiquidity }))
+    }
+    else {
+      console.log("tokenBBalance is undefined");
+      dispatch(typeInput({ type: 'TokenB', value: '0', hasLiquidity }));
+    }
   };
 
   const sourceContent = (
     <div className={classes.tokenContainerWithBalance}>
       <div className={classes.inputRow}>
-        <TokenSelectDialog
-          tokenId={tokenAInfo?.id}
-          counterpart={tokenBInfo?.id}
-          onChange={handleTokenAChange}
-          tokenBalances={balance}
-          style2={true}
-        />
         <div className={classes.inputWithMaxButton}>
           <NumberTextField
             className={classes.numberField}
@@ -110,32 +121,27 @@ function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
             autoFocus={true}
             InputProps={{ disableUnderline: true }}
             disabled={!!addingLiquidity || !!completed}
+            placeholder="0"
           />
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.maxButton}
-            onClick={handleMaxAButtonClick}
-          >
-            Max
-          </Button>
         </div>
+        <TokenSelectDialog
+          tokenId={tokenAInfo?.id}
+          counterpart={tokenBInfo?.id}
+          onChange={handleTokenAChange}
+          tokenBalances={balance}
+        />
       </div>
-      {tokenABalance ?
-        (<Typography className={classes.balance}>
-          Balance: {tokenABalance}
-        </Typography>) : null}
+      <Typography className={classes.balance}>
+        {tokenABalance ? `Balance: ${tokenABalance} ${tokenAInfo?.symbol}` : " "}
+        {tokenABalance ? (<Button className={classes.maxButton}
+                                   onClick={handleMaxAButtonClick}
+                           >Max</Button>) : " "}
+      </Typography>
     </div>
   );
   const targetContent = (
     <div className={classes.tokenContainerWithBalance}>
       <div className={classes.inputRow}>
-        <TokenSelectDialog
-          tokenId={tokenBInfo?.id}
-          counterpart={tokenAInfo?.id}
-          onChange={handleTokenBChange}
-          tokenBalances={balance}
-        />
         <div className={classes.inputWithMaxButton}>
           <NumberTextField
             className={classes.numberField}
@@ -143,21 +149,22 @@ function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
             onChange={handleTokenBAmountChange}
             InputProps={{ disableUnderline: true }}
             disabled={!!addingLiquidity || !!completed}
+            placeholder="0"
           />
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.maxButton}
-            onClick={handleMaxBButtonClick}
-          >
-            Max
-          </Button>
         </div>
+        <TokenSelectDialog
+          tokenId={tokenBInfo?.id}
+          counterpart={tokenAInfo?.id}
+          onChange={handleTokenBChange}
+          tokenBalances={balance}
+        />
       </div>
-      {tokenBBalance ?
-        (<Typography className={classes.balance}>
-          Balance: {tokenBBalance}
-        </Typography>) : null}
+      <Typography className={classes.balance}>
+        {tokenBBalance ? `Balance: ${tokenBBalance} ${tokenBInfo?.symbol}` : " "}
+        {tokenBBalance ? (<Button className={classes.maxButton}
+                                  onClick={handleMaxBButtonClick}
+                          >Max</Button>) : " "}
+      </Typography>
     </div>
   );
 
@@ -194,7 +201,12 @@ function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
         setAddingLiquidity(false)
       }
     } catch (error) {
-      setError(`${error}`)
+      if (error instanceof Error && error.message.includes("User abort")) {
+        console.log("Add Liquidity aborted by the user")
+      }
+      else {
+        setError(`${error}`)
+      }
       setAddingLiquidity(false)
       console.error(`failed to add liquidity, error: ${error}`)
     }

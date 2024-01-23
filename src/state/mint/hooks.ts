@@ -5,7 +5,8 @@ import {
   getInitAddLiquidityDetails,
   TokenPairState,
   tryBigIntToString,
-  tryStringToBigInt
+  tryStringToBigInt,
+  unPrettifyTokenAmount
 } from '../../utils/dex'
 import { selectMintState } from './selectors'
 import { useMemo } from 'react'
@@ -75,8 +76,8 @@ export function useDerivedMintInfo(setError: (err: string | undefined) => void):
     }
 
     try {
-      const tokenAInput = lastInput === 'TokenA' ? inputValue : tryBigIntToString(addLiquidityDetails?.amountA, tokenAInfo?.decimals)
-      const tokenBInput = lastInput === 'TokenB' ? inputValue : tryBigIntToString(addLiquidityDetails?.amountB, tokenBInfo?.decimals)
+      const tokenAInput = lastInput === 'TokenA' ? inputValue : unPrettifyTokenAmount(tryBigIntToString(addLiquidityDetails?.amountA, tokenAInfo?.decimals))
+      const tokenBInput = lastInput === 'TokenB' ? inputValue : unPrettifyTokenAmount(tryBigIntToString(addLiquidityDetails?.amountB, tokenBInfo?.decimals))
       const tokenAAmount = lastInput === 'TokenA' ? parsedAmount : addLiquidityDetails?.amountA
       const tokenBAmount = lastInput === 'TokenB' ? parsedAmount : addLiquidityDetails?.amountB
       return { tokenAInput, tokenBInput, tokenAAmount, tokenBAmount, tokenPairState, addLiquidityDetails: addLiquidityDetails }

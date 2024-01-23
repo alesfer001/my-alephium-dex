@@ -639,6 +639,12 @@ export function tryBigIntToString(amount: bigint | undefined, decimals: number |
   return bigIntToString(amount, decimals)
 }
 
+export function unPrettifyTokenAmount(amount: string | undefined) {
+  if (amount)
+    return amount.replace(/[^\d.-]/g, '');
+  return undefined
+}
+
 export function tryGetBalance(balances: Map<string, bigint> | undefined, tokenInfo: TokenInfo | undefined): string | undefined {
   if (balances === undefined || tokenInfo === undefined) {
     return undefined

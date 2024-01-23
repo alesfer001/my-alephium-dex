@@ -95,7 +95,16 @@ function Swap() {
   const completed = useMemo(() => txId !== undefined, [txId])
 
   const handleMaxButtonClick = () => {
-    dispatch(typeInput({ type: 'TokenIn', value: tokenInBalance ? tokenInBalance : '0' }))
+    if (tokenInBalance) {
+      const intValue = parseInt(tokenInBalance.split(',').join(''), 10);
+      const valueStr = isNaN(intValue) ? '0' : intValue.toString();
+
+      dispatch(typeInput({ type: 'TokenIn', value: valueStr }))
+    }
+    else {
+      console.log("tokenInBalance is undefined");
+      dispatch(typeInput({ type: 'TokenIn', value: '0' }));
+    }
   };
 
   const sourceContent = (
