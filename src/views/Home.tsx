@@ -5,7 +5,8 @@ import Swap from "../components/Swap";
 import logo from "../../images/simplephium-logo.png";
 import ExchangeInfo from "../components/ExchangeInfo";
 import LandingPage from "../components/LandingPage";
-import UserLiquidity from "../components/UserLiquidity";
+import AddLiquidity from "../components/AddLiquidity";
+import RemoveLiquidity from "../components/RemoveLiquidity";
 import Pool from "../components/Pools";
 import { AlephiumConnectButton, useWallet } from "@alephium/web3-react";
 import TransactionSettings from "../components/Settings";
@@ -95,12 +96,21 @@ function Home() {
               </Link>
               <Link
                 component={NavLink}
-                to="/liquidity"
+                to="/add-liquidity"
                 color="inherit"
                 className={classes.link}
                 onClick={() => { dispatch(resetMintState()) }}
               >
-                Liquidity
+                Add Liquidity
+              </Link>
+              <Link
+                component={NavLink}
+                to="/remove-liquidity"
+                color="inherit"
+                className={classes.link}
+                onClick={() => { dispatch(resetMintState()) }}
+              >
+                Remove Liquidity
               </Link>
               <Link
                 component={NavLink}
@@ -135,8 +145,11 @@ function Home() {
         <Route exact path="/swap">
           <Swap />
         </Route>
-        <Route exact path="/liquidity">
-          <UserLiquidity />
+        <Route exact path="/add-liquidity">
+          <AddLiquidity />
+        </Route>
+        <Route exact path="/remove-liquidity">
+          <RemoveLiquidity />
         </Route>
         <Route exact path="/pool">
           <Pool />

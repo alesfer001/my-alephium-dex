@@ -20,7 +20,7 @@ import { TransactionSubmitted, WaitingForTxSubmission } from "./Transactions";
 import { DetailItem } from "./DetailsItem";
 import { useWallet } from "@alephium/web3-react";
 
-function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
+function AddLiquidity() {
   const classes = commonStyles();
   const [txId, setTxId] = useState<string | undefined>(undefined)
   const [addingLiquidity, setAddingLiquidity] = useState<boolean>(false)
@@ -28,16 +28,6 @@ function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
   const [deadline,] = useDeadline()
   const dispatch = useDispatch()
   const [error, setError] = useState<string | undefined>(undefined)
-
-  useEffect(() => {
-    if (selectedTokenA) {
-      dispatch(selectTokenA(selectedTokenA));
-    }
-
-    if (selectedTokenB) {
-      dispatch(selectTokenB(selectedTokenB));
-    }
-  }, [dispatch, selectedTokenA, selectedTokenB]);
 
   const { signer, account, connectionStatus, explorerProvider } = useWallet()
   const { balance, updateBalanceForTx } = useAvailableBalances()
@@ -235,7 +225,7 @@ function AddLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
   return (
     <Container className={classes.centeredContainer} maxWidth="sm">
       <Box display="flex" justifyContent="center" alignItems="center" width="100%" position="relative">
-        <IconButton onClick={goBack} className={classes.backButton}>
+        <IconButton className={classes.backButton}>
           <ArrowBack />
         </IconButton>
         <Typography variant="h5" color="textSecondary" className={classes.centerTitle}>

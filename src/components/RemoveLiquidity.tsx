@@ -26,7 +26,7 @@ import { DetailItem } from "./DetailsItem";
 import { useHistory } from "react-router-dom";
 import { useWallet } from "@alephium/web3-react";
 
-function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
+function RemoveLiquidity() {
   const classes = commonStyles();
   const [amountInput, setAmountInput] = useState<string | undefined>(undefined)
   const [amount, setAmount] = useState<bigint | undefined>(undefined)
@@ -59,14 +59,7 @@ function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
       const balance = availableBalance.get(tokenPairState.tokenPairId)
       setTotalLiquidityAmount(balance === undefined ? 0n : balance)
     }
-    if (selectedTokenA) {
-      setTokenAInfo(selectedTokenA);
-    }
-
-    if (selectedTokenB) {
-      setTokenBInfo(selectedTokenB);
-    }
-  }, [tokenPairState, getTokenPairStateError, availableBalance, selectedTokenA, selectedTokenB])
+  }, [tokenPairState, getTokenPairStateError, availableBalance])
 
   useEffect(() => {
     setRemoveLiquidityDetails(undefined)
@@ -166,15 +159,23 @@ function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
         autoFocus={true}
         InputProps={{ disableUnderline: true }}
         disabled={!!removingLiquidity || !!completed}
+        placeholder="0"
       />
-      <Button
-        variant="contained"
-        color="primary"
-        className={classes.maxButton}
-        onClick={handleMaxButtonClick}
-      >
-        Max
-      </Button>
+      <Typography className={classes.balance}>
+        {totalLiquidityAmount ? `Balance: ${totalLiquidityAmount} LP` : " "}
+        {totalLiquidityAmount ? (<Button className={classes.maxButton}
+                                         onClick={handleMaxButtonClick}
+                                 >Max</Button>) : " "}
+      </Typography>
+
+      {/* <Button
+          variant="contained"
+          color="primary"
+          className={classes.maxButton}
+          onClick={handleMaxButtonClick}
+          >
+          Max
+          </Button> */}
     </div>
   )
 
@@ -244,7 +245,7 @@ function RemoveLiquidity({ goBack, selectedTokenA, selectedTokenB }) {
   return (
     <Container className={classes.centeredContainer} maxWidth="sm">
       <Box display="flex" justifyContent="center" alignItems="center" width="100%" position="relative">
-        <IconButton onClick={goBack} className={classes.backButton}>
+        <IconButton className={classes.backButton}>
           <ArrowBack />
         </IconButton>
         <Typography variant="h5" color="textSecondary" className={classes.centerTitle}>

@@ -22,24 +22,10 @@ type Position = {
 function UserLiquidity() {
   const classes = commonStyles();
   const [showAddLiquidity, setShowAddLiquidity] = useState(false);
-  const [selectedTokenA, setSelectedTokenA] = useState(null);
-  const [selectedTokenB, setSelectedTokenB] = useState(null);
   const [showRemoveLiquidity, setShowRemoveLiquidity] = useState(false);
 
   const { signer, account, connectionStatus, explorerProvider } = useWallet()
   const { balance, updateBalanceForTx } = useAvailableBalances()
-
-  const handleAddLiquidity = (tokenA, tokenB) => {
-    setSelectedTokenA(tokenA);
-    setSelectedTokenB(tokenB);
-    setShowAddLiquidity(true);
-  };
-
-  const handleRemoveLiquidity = (tokenA, tokenB) => {
-    setSelectedTokenA(tokenA);
-    setSelectedTokenB(tokenB);
-    setShowRemoveLiquidity(true);
-  };
 
   // Need to loop over positions or tokens here
   const { tokenPairState, getTokenPairStateError } = useTokenPairState(TokenList[0], TokenList[1])
@@ -62,27 +48,11 @@ function UserLiquidity() {
   }, [tokenPairState, balance]);
 
   if (showAddLiquidity) {
-    return <AddLiquidity
-             selectedTokenA={selectedTokenA}
-             selectedTokenB={selectedTokenB}
-             goBack={() => {
-               setShowAddLiquidity(false);
-               setSelectedTokenA(null);
-               setSelectedTokenB(null);
-             }}
-           />;
+    return <AddLiquidity />;
   }
 
   if (showRemoveLiquidity) {
-    return <RemoveLiquidity
-             selectedTokenA={selectedTokenA}
-             selectedTokenB={selectedTokenB}
-             goBack={() => {
-               setShowRemoveLiquidity(false);
-               setSelectedTokenA(null);
-               setSelectedTokenB(null);
-             }}
-           />;
+    return <RemoveLiquidity />;
   }
 
   return (
@@ -95,7 +65,7 @@ function UserLiquidity() {
           className={classes.addLiquidityButton}
           variant="contained"
           color="primary"
-          onClick={() => handleAddLiquidity(null, null)}>
+        >
           Add Liquidity
         </Button>
       </div>
@@ -103,12 +73,10 @@ function UserLiquidity() {
       <Paper className={classes.mainPaper}>
         {connectionStatus === 'connected' && userPositions.length > 0 ? (
           userPositions.map((position, index) => (
-            <LiquidityPosition
-              key={index}
-              position={position}
-              onAdd={() => handleAddLiquidity(position.tokenA, position.tokenB)}
-              onRemove={() => handleRemoveLiquidity(position.tokenA, position.tokenB)}
-            />
+            {/* <LiquidityPosition
+                key={index}
+                position={position}
+                /> */}
           ))) : (
           <>
             <Typography variant="body2">

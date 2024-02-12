@@ -20,6 +20,8 @@ function Pool() {
   const { tokenPairState, getTokenPairStateError } = useTokenPairState(tokenAInfo, tokenBInfo)
   const { connectionStatus } = useWallet()
   const { balance } = useAvailableBalances()
+  console.log(tokenPairState);
+  console.log(balance)
 
   const handleAddPool = () => {
     setShowAddPool(true);
