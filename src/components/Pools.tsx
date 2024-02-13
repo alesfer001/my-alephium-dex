@@ -79,14 +79,7 @@ function Pool() {
       <div className={commonClasses.spacer} />
       <Paper className={commonClasses.mainPaper}>
         <div>
-          {connectionStatus !== 'connected' ?
-            <div>
-              <Typography variant="h6" color="error" className={commonClasses.error}>
-                Your wallet is not connected
-              </Typography>
-            </div> : null
-          }
-          <Collapse in={connectionStatus === 'connected'}>
+          <Collapse in={true}>
             {
               <>
                 {tokenPairContent}

@@ -238,16 +238,13 @@ function RemoveLiquidity() {
         classes.gradientButton + (!readyToRemoveLiquidity ? " " + classes.disabled : "")
       }
     >
-      Remove Liquidity
+      {connectionStatus === 'connected' ? "Remove Liquidity" : "Your wallet is not connected"}
     </ButtonWithLoader>
   );
 
   return (
     <Container className={classes.centeredContainer} maxWidth="sm">
       <Box display="flex" justifyContent="center" alignItems="center" width="100%" position="relative">
-        <IconButton className={classes.backButton}>
-          <ArrowBack />
-        </IconButton>
         <Typography variant="h5" color="textSecondary" className={classes.centerTitle}>
           Remove Liquidity
         </Typography>
@@ -265,15 +262,8 @@ function RemoveLiquidity() {
           buttonText="Swap Coins"
           onClick={redirectToSwap}
         />
-        {connectionStatus !== 'connected' ?
-          <div>
-            <Typography variant="h6" color="error" className={classes.error}>
-              Your wallet is not connected
-            </Typography>
-          </div> : null
-        }
         <div>
-          <Collapse in={!removingLiquidity && !completed && connectionStatus === 'connected'}>
+          <Collapse in={!removingLiquidity && !completed}>
             {
               <>
                 {tokenPairContent}

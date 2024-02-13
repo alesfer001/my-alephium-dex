@@ -114,7 +114,7 @@ function AddPool({ goBack }) {
         commonClasses.gradientButton + (!readyToAddPool ? " " + commonClasses.disabled : "")
       }
     >
-      Add Pool
+      {connectionStatus === 'connected' ? "Add Pool" : "Your wallet is not connected"}
     </ButtonWithLoader>
   );
 
@@ -141,15 +141,8 @@ function AddPool({ goBack }) {
           buttonText="Add Liquidity"
           onClick={redirectToAddLiquidity}
         />
-        {connectionStatus !== 'connected' ?
-          <div>
-            <Typography variant="h6" color="error" className={commonClasses.error}>
-              Your wallet is not connected
-            </Typography>
-          </div> : null
-        }
         <div>
-          <Collapse in={!addingPool && !completed && connectionStatus === 'connected'}>
+          <Collapse in={!addingPool && !completed}>
             {
               <>
                 {tokenPairContent}

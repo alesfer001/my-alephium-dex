@@ -225,9 +225,6 @@ function AddLiquidity() {
   return (
     <Container className={classes.centeredContainer} maxWidth="sm">
       <Box display="flex" justifyContent="center" alignItems="center" width="100%" position="relative">
-        <IconButton className={classes.backButton}>
-          <ArrowBack />
-        </IconButton>
         <Typography variant="h5" color="textSecondary" className={classes.centerTitle}>
           Add Liquidity
         </Typography>
@@ -246,7 +243,7 @@ function AddLiquidity() {
           onClick={redirectToSwap}
         />
         <div>
-          <Collapse in={!addingLiquidity && !completed && connectionStatus === 'connected'}>
+          <Collapse in={!addingLiquidity && !completed}>
             {
               <>
                 {sourceContent}
