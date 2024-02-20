@@ -166,6 +166,9 @@ function Swap() {
   const handleSwap = useCallback(async () => {
     try {
       setSwapping(true)
+      console.log(connectionStatus)
+      console.log(explorerProvider)
+      console.log(swapDetails)
       if (connectionStatus === 'connected' && explorerProvider !== undefined && swapDetails !== undefined) {
         const result = await swap(
           swapDetails,

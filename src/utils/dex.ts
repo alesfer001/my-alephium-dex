@@ -174,6 +174,8 @@ async function swapMinOut(
   amountOutMin: bigint,
   ttl: number
 ): Promise<SignExecuteScriptTxResult> {
+  console.log("Here we go!!!")
+  console.log("Signer:", signer, "Sender:", sender, "RouterId:", network.routerId, "tokenPairId:", state.tokenPairId, "tokenInId:", tokenInId, "amountIn:", amountIn, "amountOutMin:", amountOutMin, "deadline", deadline(ttl))
   const result = await SwapMinOut.execute(signer, {
     initialFields: {
       sender: sender,
@@ -187,6 +189,7 @@ async function swapMinOut(
     attoAlphAmount: extraDustAmount(state.token0Info.id, state.token1Info.id),
     tokens: [{ id: tokenInId, amount: amountIn }]
   })
+  console.log(result)
   await waitTxSubmitted(explorerProvider, result.txId)
   return result
 }
