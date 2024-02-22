@@ -15,6 +15,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import { bigIntToString, TokenList } from "../utils/dex";
 import { TokenInfo } from '@alephium/token-list'
 import { MyDialog } from "./MyDialog";
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 
 const useStyles = makeStyles((theme) => ({
   flexTitle: {
@@ -158,12 +159,13 @@ export default function TokenSelectDialog({
             <Typography variant="h6" className={classes.selectedSymbol}>
               {info.symbol}
             </Typography>
+            <ArrowDropDownIcon />
           </>
-          ): (
-            <Typography variant="h6" className={classes.selectedSymbol}>
-              Select token
-            </Typography>
-          )
+        ): (
+          <Typography variant="h6" className={classes.selectedSymbol}>
+            Select token
+          </Typography>
+        )
         }
       </Card>
       <MyDialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
