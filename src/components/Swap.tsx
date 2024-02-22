@@ -213,7 +213,7 @@ function Swap() {
     <Container className={classes.centeredContainer} maxWidth="sm">
       <div className={classes.swapTitle}>
         <Typography variant="h5" color="textSecondary">
-          Swap
+         Trade
         </Typography>
         <TransactionSettings />
       </div>

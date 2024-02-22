@@ -36,6 +36,16 @@ export const commonStyles = makeStyles((theme) => ({
     alignItems: "center",
     width: "100%"
   },
+  inputRemoveLiquidity: {
+    display: "flex",
+    alignItems: "center",
+    width: "100%",
+    border: '1px solid rgba(255, 255, 255, 0.1)', // subtle border
+    borderRadius: '20px',
+    backgroundColor: '#1F2128', // a darker background color for the container
+    padding: theme.spacing(0.5),
+    marginTop: theme.spacing(3)
+  },
   maxButton: {
     color: COLORS.blue, // White text color
     borderRadius: '12px', // Rounded corners
@@ -69,7 +79,7 @@ export const commonStyles = makeStyles((theme) => ({
     padding: "0.1rem",
     justifyContent: 'flex-end',
     fontSize: '.7rem',
-    paddingTop: "1rem",
+    // paddingTop: "1rem",
     alignItems: "center"
   // tokenContainerWithBalance: {
   //   minHeight: "44px",
@@ -116,7 +126,7 @@ export const commonStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: theme.spacing(2),
+    margin: theme.spacing(4),
   },
   addLiquidityButton: {
     position: 'absolute',
@@ -195,7 +205,8 @@ export const commonStyles = makeStyles((theme) => ({
   },
   notification: {
     display: 'flex',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    marginTop: theme.spacing(2)
   },
   leftAlign: {
     textAlign: "left",

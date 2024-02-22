@@ -151,7 +151,7 @@ function RemoveLiquidity() {
   const completed = useMemo(() => txId !== undefined, [txId])
   
   const amountInputBox = (
-    <div className={classes.inputWithMaxButton}>
+    <div className={classes.inputRemoveLiquidity}>
       <NumberTextField
         className={classes.numberField}
         value={amountInput !== undefined ? amountInput : ''}
@@ -244,12 +244,12 @@ function RemoveLiquidity() {
 
   return (
     <Container className={classes.centeredContainer} maxWidth="sm">
-      <Box display="flex" justifyContent="center" alignItems="center" width="100%" position="relative">
-        <Typography variant="h5" color="textSecondary" className={classes.centerTitle}>
+      {/* <Box display="flex" justifyContent="center" alignItems="center" width="100%" position="relative">
+          <Typography variant="h5" color="textSecondary" className={classes.centerTitle}>
           Remove Liquidity
-        </Typography>
-        <div></div>
-      </Box>
+          </Typography>
+          <div></div>
+          </Box> */}
       <div className={classes.spacer} />
       <Paper className={classes.mainPaper}>
         <WaitingForTxSubmission
