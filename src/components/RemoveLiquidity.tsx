@@ -24,7 +24,7 @@ import { useTokenPairState } from "../state/useTokenPairState";
 import { TransactionSubmitted, WaitingForTxSubmission } from "./Transactions";
 import { DetailItem } from "./DetailsItem";
 import { useHistory } from "react-router-dom";
-import { useWallet } from "@alephium/web3-react";
+import { AlephiumConnectButton, useWallet } from "@alephium/web3-react";
 
 function RemoveLiquidity() {
   const classes = commonStyles();
@@ -238,8 +238,14 @@ function RemoveLiquidity() {
         classes.gradientButton + (!readyToRemoveLiquidity ? " " + classes.disabled : "")
       }
     >
-      {connectionStatus === 'connected' ? "Remove Liquidity" : "Your wallet is not connected"}
+      Remove Liquidity
     </ButtonWithLoader>
+  );
+
+  const connectButton = (
+    <div className={classes.connectWalletButton}>
+      <AlephiumConnectButton label="Connect wallet" />
+    </div>
   );
 
   return (
@@ -294,7 +300,7 @@ function RemoveLiquidity() {
                   ) : null}
                 </>
                 <div className={classes.spacer} />
-                {removeLiquidityButton}
+                {connectionStatus === 'connected' ? removeLiquidityButton : connectButton}
               </>
             }
           </Collapse>

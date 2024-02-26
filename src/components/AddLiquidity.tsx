@@ -18,7 +18,7 @@ import { commonStyles } from "./style";
 import { useHistory } from "react-router-dom";
 import { TransactionSubmitted, WaitingForTxSubmission } from "./Transactions";
 import { DetailItem } from "./DetailsItem";
-import { useWallet } from "@alephium/web3-react";
+import { AlephiumConnectButton, useWallet } from "@alephium/web3-react";
 
 function AddLiquidity() {
   const classes = commonStyles();
@@ -218,9 +218,16 @@ function AddLiquidity() {
         classes.gradientButton + (!readyToAddLiquidity ? " " + classes.disabled : "")
       }
     >
-      {connectionStatus === 'connected' ? "Add Liquidity" : "Your wallet is not connected"}
+      Add Liquidity
     </ButtonWithLoader>
   );
+
+  const connectButton = (
+    <div className={classes.connectWalletButton}>
+      <AlephiumConnectButton label="Connect wallet" />
+    </div>
+  );
+
 
   return (
     <Container className={classes.centeredContainer} maxWidth="sm">
@@ -258,7 +265,7 @@ function AddLiquidity() {
               </>
             }
             <AddLiquidityDetailsCard details={addLiquidityDetails} slippage={slippage === 'auto' ? DEFAULT_SLIPPAGE : slippage}></AddLiquidityDetailsCard>
-            {addLiquidityButton}
+            {connectionStatus === 'connected' ? addLiquidityButton : connectButton}
           </Collapse>
         </div>
       </Paper>

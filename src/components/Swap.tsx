@@ -21,8 +21,7 @@ import { DetailItem } from "./DetailsItem";
 import TransactionSettings from "../components/Settings";
 import { TokenList } from "../utils/dex";
 import { useEffect } from 'react';
-
-import { useWallet } from "@alephium/web3-react";
+import { AlephiumConnectButton, useWallet } from "@alephium/web3-react";
 
 function Swap() {
   const classes = commonStyles();
@@ -205,15 +204,21 @@ function Swap() {
         classes.gradientButton + (!readyToSwap ? " " + classes.disabled : "")
       }
     >
-      {connectionStatus === 'connected' ? "Swap" : "Your wallet is not connected"}
+      Swap
     </ButtonWithLoader>
+  );
+
+  const connectButton = (
+    <div className={classes.connectWalletButton}>
+      <AlephiumConnectButton label="Connect wallet" />
+    </div>
   );
 
   return (
     <Container className={classes.centeredContainer} maxWidth="sm">
       <div className={classes.swapTitle}>
         <Typography variant="h5" color="textSecondary">
-         Trade
+          Trade
         </Typography>
         <TransactionSettings />
       </div>
@@ -249,7 +254,7 @@ function Swap() {
               </>
             }
             <SwapDetailsCard swapDetails={swapDetails}></SwapDetailsCard>
-            {swapButton}
+            {connectionStatus === 'connected' ? swapButton : connectButton}
           </Collapse>
         </div>
       </Paper>

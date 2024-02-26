@@ -10,7 +10,7 @@ import { commonStyles } from "./style";
 import TokenSelectDialog from "./TokenSelectDialog";
 import { useHistory } from "react-router-dom";
 import { TransactionSubmitted, WaitingForTxSubmission } from "./Transactions";
-import { useWallet } from "@alephium/web3-react";
+import { AlephiumConnectButton, useWallet } from "@alephium/web3-react";
 
 function AddPool({ goBack }) {
   const commonClasses = commonStyles();
@@ -101,7 +101,7 @@ function AddPool({ goBack }) {
   }, [signer, account, connectionStatus, explorerProvider, tokenAInfo, tokenBInfo, updateBalanceForTx])
 
   const readyToAddPool =
-    connectionStatus === 'connected'
+    connectionStatus === 'connected' &&
     tokenAInfo !== undefined &&
     tokenBInfo !== undefined &&
     !addingPool && !completed && 
@@ -114,8 +114,14 @@ function AddPool({ goBack }) {
         commonClasses.gradientButton + (!readyToAddPool ? " " + commonClasses.disabled : "")
       }
     >
-      {connectionStatus === 'connected' ? "Add Pool" : "Your wallet is not connected"}
+      Add Pool
     </ButtonWithLoader>
+  );
+
+ const connectButton = (
+    <div className={commonClasses.connectWalletButton}>
+      <AlephiumConnectButton label="Connect wallet" />
+    </div>
   );
 
   return (
@@ -155,7 +161,7 @@ function AddPool({ goBack }) {
                 <div className={commonClasses.spacer} />
               </>
             }
-            {addPoolButton}
+            {connectionStatus === 'connected' ? addPoolButton : connectButton}
           </Collapse>
         </div>
       </Paper>

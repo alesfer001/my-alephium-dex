@@ -224,4 +224,50 @@ export const commonStyles = makeStyles((theme) => ({
     margin: ".5rem 0rem .5rem 0rem",
     height: "30px"
   },
+  connectWalletButton: {
+    "& > div": {
+      width: "100%",
+      display: "flex",
+      borderRadius: "5px",
+      marginTop: "1rem"
+
+    },
+    "& > div > button": {
+      width: "100%",
+      borderRadius: "5px",
+      padding: "0", // Reset padding if necessary
+      border: "none", // Reset border if necessary
+      margin: "0",
+      overflow: 'hidden', // To match the "Swap" button's overflow property
+      boxShadow: "0 0 20px #222", // Match the shadow as well
+    },
+    "& > div > button > div": {
+      backgroundImage: `linear-gradient(45deg, ${COLORS.blue} 0%, ${COLORS.nearBlack}20 50%,  ${COLORS.blue}30 62%, ${COLORS.nearBlack}50  120%)`,
+      transition: "0.75s",
+      backgroundSize: "200% auto",
+      // boxShadow: "0 0 20px #222",
+      // "&:hover": {
+      //   backgroundPosition: "right center",
+      // },
+      display: "flex", // To center content, if necessary
+      alignItems: "center", // To center content, if necessary
+      justifyContent: "center", // To center content, if necessary
+      borderRadius: "5px",
+      height: "3rem",
+      width: "100% !important", // Important! Make sure this doesn't conflict with inline styles
+      "&:hover": {
+        backgroundPosition: "right center",
+        borderRadius: "5px !important",
+        backgroundColor: "rgba(17, 81, 161, 0.8) !important"
+      },
+      backgroundColor: "rgba(25, 117, 230, 0.8)"
+    },
+    // Since you're setting width to 100% important on the child div,
+    // make sure that the nested div where the text is also has width set to 100% to not overflow
+    "& > div > button > div > div": {
+      flexGrow: "1",
+      textAlign: "center",
+      width: "100% !important" // Assuming this is the div that contains the text
+    }
+  },
 }));

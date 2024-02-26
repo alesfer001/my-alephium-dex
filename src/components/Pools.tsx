@@ -66,7 +66,7 @@ function Pool() {
     <Container className={commonClasses.centeredContainer} maxWidth="sm">
       <div className={commonClasses.swapTitle}>
         <Typography variant="h5" color="textSecondary">
-          Pools
+          Existing Pools
         </Typography>
         <Button
           className={commonClasses.addLiquidityButton}
