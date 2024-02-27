@@ -12,6 +12,7 @@ export const COLORS = {
   nearBlackWithMinorTransparency: "rgba(0,0,0,.70)",
   red: "#aa0818",
   darkRed: "#810612",
+  white: "#fff"
 };
 
 export const theme = responsiveFontSizes(

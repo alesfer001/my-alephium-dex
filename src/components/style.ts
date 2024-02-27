@@ -57,6 +57,22 @@ export const commonStyles = makeStyles((theme) => ({
     '&:hover': {
       color: COLORS.blueWithTransparency,
       backgroundColor: 'transparent', // Slightly darker purple on hover
+      '& > span > svg': {
+        fill: COLORS.blueWithTransparency
+      }
+    },
+  },
+  walletDisplay: {
+    color: COLORS.white, // White text color
+    borderRadius: '12px', // Rounded corners
+    padding: theme.spacing(0.5, 1), // Vertical and horizontal padding
+    fontSize: '0.75rem', // Smaller font size
+    fontWeight: 'bold', // Bold font weight
+    textTransform: 'none', // Prevent uppercase transformation
+    minWidth: 'auto', // Adjust width to content
+    '&:hover': {
+      cursor: "default",
+      backgroundColor: "transparent"
     },
   },
   hiddenButton: {
