@@ -2,7 +2,6 @@
   "name": "alephium-dex",
   "version": "0.1.0",
   "license": "GPL",
-  "homepage": "https://alephium.github.io/alephium-dex",
   "scripts": {
     "compile": "npx @alephium/cli compile",
     "test": "npx @alephium/cli test",
