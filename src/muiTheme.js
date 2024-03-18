@@ -4,6 +4,8 @@ export const COLORS = {
   blue: "#1975e6",
   blueWithTransparency: "rgba(25, 117, 230, 0.8)",
   gray: "#4e4e54",
+  darkGray: "#2C2F36",
+  lightGray: "#202225",
   green: "#0ac2af",
   greenWithTransparency: "rgba(10, 194, 175, 0.8)",
   lightGreen: "rgba(51, 242, 223, 1)",
@@ -12,7 +14,8 @@ export const COLORS = {
   nearBlackWithMinorTransparency: "rgba(0,0,0,.70)",
   red: "#aa0818",
   darkRed: "#810612",
-  white: "#fff"
+  white: "#fff",
+  darkWhite: "#C0C0C0"
 };
 
 export const theme = responsiveFontSizes(

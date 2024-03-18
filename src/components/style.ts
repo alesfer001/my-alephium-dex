@@ -286,4 +286,32 @@ export const commonStyles = makeStyles((theme) => ({
       width: "100% !important" // Assuming this is the div that contains the text
     }
   },
+
+  poolList: {
+    "& table": {
+      width: '100%',
+      borderCollapse: 'collapse',
+      backgroundColor: COLORS.nearBlack,
+    },
+    "& th": {
+      textAlign: 'left',
+      padding: theme.spacing(1),
+      backgroundColor: COLORS.darkGray,
+      color: COLORS.white,
+    },
+    "& td": {
+      textAlign: 'left',
+      padding: theme.spacing(1),
+      backgroundColor: COLORS.lightGray,
+      color: COLORS.darkWhite,
+      whiteSpace: 'nowrap'
+    },
+    "& th:first-child": {
+      borderTopLeftRadius: '6px',
+    },
+    "& th:last-child": {
+      borderTopRightRadius: '6px',
+    },
+  }
+
 }));

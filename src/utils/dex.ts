@@ -95,7 +95,8 @@ export interface TokenPairState {
   reserve1: bigint
   token0Info: TokenInfo,
   token1Info: TokenInfo,
-  totalSupply: bigint
+  totalSupply: bigint,
+  feeCollectorId: string
 }
 
 export async function getTokenPairState(tokenAInfo: TokenInfo, tokenBInfo: TokenInfo): Promise<TokenPairState> {
@@ -114,7 +115,8 @@ export async function getTokenPairState(tokenAInfo: TokenInfo, tokenBInfo: Token
       reserve1: state.fields.reserve1,
       token0Info: token0Id === tokenAInfo.id ? tokenAInfo : tokenBInfo,
       token1Info: token1Id === tokenBInfo.id ? tokenBInfo : tokenAInfo,
-      totalSupply: state.fields.totalSupply
+      totalSupply: state.fields.totalSupply,
+      feeCollectorId: state.fields.feeCollectorId
     }
   } catch (error) {
     if (error instanceof Error && error.message.includes('not found')) {

@@ -1,7 +1,7 @@
 import { Container, Paper, Typography, Card, Button } from "@material-ui/core";
 import Collapse from "@material-ui/core/Collapse";
-import { useState, useCallback } from "react";
-import { bigIntToString, PairTokenDecimals, TokenPairState } from "../utils/dex";
+import { useState, useCallback, useEffect } from "react";
+import { bigIntToString, PairTokenDecimals, TokenPairState, getTokenPairState } from "../utils/dex";
 import { commonStyles } from "./style";
 import { TokenInfo } from "@alephium/token-list";
 import { useTokenPairState } from "../state/useTokenPairState";
@@ -11,6 +11,19 @@ import { DetailItem } from "./DetailsItem";
 import BigNumber from "bignumber.js";
 import AddPool from './AddPool';
 import { useWallet } from "@alephium/web3-react";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from '@material-ui/core';
+import axios from "axios";
+
+import { TokenList } from "../utils/dex";
+
+interface Pool {
+  pool: string,
+  fee: string,
+  tvl: string,
+  volume24h: string,
+  volume7d: string,
+  share: string
+}
 
 function Pool() {
   const commonClasses = commonStyles()
@@ -20,12 +33,96 @@ function Pool() {
   const { tokenPairState, getTokenPairStateError } = useTokenPairState(tokenAInfo, tokenBInfo)
   const { connectionStatus } = useWallet()
   const { balance } = useAvailableBalances()
-  console.log(tokenPairState);
-  console.log(balance)
+
+  const [response, setResponse] = useState<TokenPairState | null>(null);
+  const [pools, setPools] = useState<Pool[]>([])
+
+  function findTokenById(tokenId) {
+    return TokenList.find(token => token.id === tokenId);
+  }
+
+  const [tokenPairs, setTokenPairs] = useState([]);
+
+  useEffect(() => {
+    const tokenPairsStr = process.env.REACT_APP_POOL_TOKEN_PAIRS;
+    if (tokenPairsStr) {
+      try {
+        const tokenPairsArray = JSON.parse(tokenPairsStr);
+        setTokenPairs(tokenPairsArray);
+      } catch (error) {
+        console.error("Failed to parse token pairs environment variable:", error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchTokenPairStates = async () => {
+      let newRows: Pool[] = []; // Temporary array to hold the new state
+
+      for (const pair of tokenPairs) {
+        const token0 = findTokenById(pair["token0_id"]);
+        const token1 = findTokenById(pair["token1_id"]);
+
+        if (token0 !== undefined && token1 !== undefined) {
+          const response = await getTokenPairState(token0, token1);
+
+          let poolTokenBalance = balance.get(response.tokenPairId) ?? 0n;
+          let sharePercentage = BigNumber((poolTokenBalance * 100n).toString()).div(BigNumber(response.totalSupply.toString())).toFixed(5);
+
+          let fetchPrice = async (tokenId) => {
+            tokenId = tokenId.toLowerCase()
+            try {
+              const response = await axios.get(
+                `https://api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=usd`
+              );
+              const price = response.data[tokenId].usd;
+              return price
+            } catch (error) {
+              console.error("Error fetching price:", error);
+              return "1"
+            }
+          }
+
+          let token0price = await fetchPrice(response.token0Info.name)
+          let token1price = await fetchPrice(response.token1Info.name)
+
+          const reserve0Adjusted = bigIntToString(response.reserve0, response.token0Info.decimals).replace(/,/g, '')
+          const reserve1Adjusted = bigIntToString(response.reserve1, response.token1Info.decimals).replace(/,/g, '')
+
+          const TVL = (parseInt(reserve0Adjusted) * token0price) + (parseInt(reserve1Adjusted) * token1price);
+
+          newRows.push({
+            pool: `${response.token0Info.symbol}/${response.token1Info.symbol}`,
+            fee: `${response.feeCollectorId}%`,
+            tvl: `${TVL}$`,
+            volume24h: "?",
+            volume7d: "?",
+            share: `${sharePercentage}%`
+          });
+        }
+      }
+
+      setPools(newRows); // Update state once with the final result
+    };
+
+    setPools([]); // Reset pools at the beginning of the effect
+    fetchTokenPairStates();
+  }, [tokenPairs, balance]); // Ensure balance and tokenPairs are in the dependency array if they are used or changed outside
+
+  const [orderDirection, setOrderDirection] = useState<'asc' | 'desc'>('desc');
+  const [valueToOrderBy, setValueToOrderBy] = useState('tvl');
 
   const handleAddPool = () => {
     setShowAddPool(true);
   };
+
+  const handleRequestSort = (property) => {
+    const isAscending = (valueToOrderBy === property && orderDirection === 'asc');
+    setValueToOrderBy(property);
+    setOrderDirection(isAscending ? 'desc' : 'asc');
+    // Implement the logic to sort your data based on the property and direction
+  };
+
 
   const handleTokenAChange = useCallback((tokenInfo) => {
     setTokenAInfo(tokenInfo)
@@ -96,7 +193,87 @@ function Pool() {
             }
           </Collapse>
         </div>
+
       </Paper>
+      <div className={commonClasses.poolList}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                #
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={valueToOrderBy === 'pool'}
+                  direction={valueToOrderBy === 'pool' ? orderDirection : 'asc'}
+                  onClick={() => handleRequestSort('pool')}
+                >
+                  Pool
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={valueToOrderBy === 'fee'}
+                  direction={valueToOrderBy === 'fee' ? orderDirection : 'asc'}
+                  onClick={() => handleRequestSort('fee')}
+                >
+                  Fee
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={valueToOrderBy === 'tvl'}
+                  direction={valueToOrderBy === 'tvl' ? orderDirection : 'asc'}
+                  onClick={() => handleRequestSort('tvl')}
+                >
+                  TVL
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={valueToOrderBy === 'volume24h'}
+                  direction={valueToOrderBy === 'volume24h' ? orderDirection : 'asc'}
+                  onClick={() => handleRequestSort('volume24h')}
+                >
+                  Volume 24H
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={valueToOrderBy === 'volume7d'}
+                  direction={valueToOrderBy === 'volume7d' ? orderDirection : 'asc'}
+                  onClick={() => handleRequestSort('volume7d')}
+                >
+                  Volume 7D
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={valueToOrderBy === 'share'}
+                  direction={valueToOrderBy === 'share' ? orderDirection : 'asc'}
+                  onClick={() => handleRequestSort('share')}
+                >
+                  Pool share
+                </TableSortLabel>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+
+          <TableBody>
+            {pools.map((row, index) => (
+              <TableRow key={index}>
+                <TableCell>{index+1}</TableCell>
+                <TableCell>{row.pool}</TableCell>
+                <TableCell>{row.fee}</TableCell>
+                <TableCell>{row.tvl}</TableCell>
+                <TableCell>{row.volume24h}</TableCell>
+                <TableCell>{row.volume7d}</TableCell>
+                <TableCell>{row.share}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </Container>
   );
 }
