@@ -93,7 +93,7 @@ function Pool() {
 
           newRows.push({
             pool: `${response.token0Info.symbol}/${response.token1Info.symbol}`,
-            fee: `${response.feeCollectorId}%`,
+            fee: `?%`,
             tvl: `${TVL}$`,
             volume24h: "?",
             volume7d: "?",
