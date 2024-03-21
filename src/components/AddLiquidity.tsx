@@ -43,8 +43,10 @@ function AddLiquidity({ goBack, tokenInfos }) {
   }, [dispatch]);
 
   const { tokenAInfo, tokenBInfo } = useSelector(selectMintState)
-  selectTokenA(tokenInfos.token0Info);
-  selectTokenB(tokenInfos.token1Info);
+  useEffect(() => {
+    dispatch(selectTokenA(tokenInfos.token0Info));
+    dispatch(selectTokenB(tokenInfos.token1Info));
+  }, [])
   const { tokenAInput, tokenBInput, tokenAAmount, tokenBAmount, tokenPairState, addLiquidityDetails } = useDerivedMintInfo(setError)
 
   const handleTokenAAmountChange = useCallback((event) => {
