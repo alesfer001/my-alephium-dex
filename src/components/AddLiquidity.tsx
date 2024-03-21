@@ -34,9 +34,6 @@ function AddLiquidity({ goBack, tokenInfos }) {
   const { balance, updateBalanceForTx } = useAvailableBalances()
   const history = useHistory()
 
-  const [tokenAInfo, setTokenAInfo] = useState(tokenInfos.token0Info);
-  const [tokenBInfo, setTokenBInfo] = useState(tokenInfos.token1Info);
-
   const handleTokenAChange = useCallback((tokenInfo) => {
     dispatch(selectTokenA(tokenInfo))
   }, [dispatch]);
@@ -45,7 +42,9 @@ function AddLiquidity({ goBack, tokenInfos }) {
     dispatch(selectTokenB(tokenInfo))
   }, [dispatch]);
 
-  // const { tokenAInfo, tokenBInfo } = useSelector(selectMintState)
+  const { tokenAInfo, tokenBInfo } = useSelector(selectMintState)
+  selectTokenA(tokenInfos.token0Info);
+  selectTokenB(tokenInfos.token1Info);
   const { tokenAInput, tokenBInput, tokenAAmount, tokenBAmount, tokenPairState, addLiquidityDetails } = useDerivedMintInfo(setError)
 
   const handleTokenAAmountChange = useCallback((event) => {
