@@ -15,8 +15,12 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Table
 import axios from "axios";
 
 import { TokenList } from "../utils/dex";
+import AddLiquidity from "./AddLiquidity";
+import RemoveLiquidity from "./RemoveLiquidity";
 
 interface Pool {
+  token0Info: TokenInfo,
+  token1Info: TokenInfo,
   pool: string,
   fee: string,
   tvl: string,
@@ -36,6 +40,9 @@ function Pool() {
 
   const [response, setResponse] = useState<TokenPairState | null>(null);
   const [pools, setPools] = useState<Pool[]>([])
+
+  const [openComponent, setOpenComponent] = useState<string>("");
+  const [selectedRow, setSelectedRow] = useState<string>("");
 
   function findTokenById(tokenId) {
     return TokenList.find(token => token.id === tokenId);
@@ -92,12 +99,14 @@ function Pool() {
           const TVL = (parseInt(reserve0Adjusted) * token0price) + (parseInt(reserve1Adjusted) * token1price);
 
           newRows.push({
+            token0Info: response.token0Info,
+            token1Info: response.token1Info,
             pool: `${response.token0Info.symbol}/${response.token1Info.symbol}`,
             fee: `?%`,
             tvl: `${TVL}$`,
             volume24h: "?",
             volume7d: "?",
-            share: `${sharePercentage}%`
+            share: sharePercentage != 'NaN' ? sharePercentage : '0'
           });
         }
       }
@@ -153,10 +162,38 @@ function Pool() {
 
   if (showAddPool) {
     return <AddPool
-             goBack={() => {
-               setShowAddPool(false);
-             }}
-           />;
+      goBack={() => {
+        setShowAddPool(false);
+      }}
+    />;
+  }
+
+  const openAddLiquidity = (row) => {
+    setSelectedRow(row);
+    setOpenComponent('AddLiquidity');
+  };
+
+  const openRemoveLiquidity = (row) => {
+    setSelectedRow(row);
+    setOpenComponent('RemoveLiquidity');
+  };
+
+  if (openComponent == 'AddLiquidity') {
+    return <AddLiquidity
+      goBack={() => {
+        setOpenComponent('')
+      }}
+      tokenInfos = {selectedRow}
+    />
+  }
+
+  if (openComponent == 'RemoveLiquidity') {
+    return <RemoveLiquidity
+      goBack={() => {
+        setOpenComponent('')
+      }}
+      tokenInfos = {selectedRow}
+    />
   }
 
   return (
@@ -256,19 +293,26 @@ function Pool() {
                   Pool share
                 </TableSortLabel>
               </TableCell>
+              <TableCell>
+                Liquidity
+              </TableCell>
             </TableRow>
           </TableHead>
 
           <TableBody>
             {pools.map((row, index) => (
               <TableRow key={index}>
-                <TableCell>{index+1}</TableCell>
+                <TableCell>{index + 1}</TableCell>
                 <TableCell>{row.pool}</TableCell>
                 <TableCell>{row.fee}</TableCell>
                 <TableCell>{row.tvl}</TableCell>
                 <TableCell>{row.volume24h}</TableCell>
                 <TableCell>{row.volume7d}</TableCell>
-                <TableCell>{row.share}</TableCell>
+                <TableCell>{row.share}%</TableCell>
+                <TableCell>
+                  <Button onClick={() => openAddLiquidity(row)}>Add Liquidity</Button>
+                  {(Number(row.share)) > 0 && <Button onClick={() => openRemoveLiquidity(row)}>Remove Liquidity</Button>}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -278,7 +322,7 @@ function Pool() {
   );
 }
 
-function PoolDetailsCard({ state, balance } : { state: TokenPairState | undefined, balance: Map<string, bigint> }) {
+function PoolDetailsCard({ state, balance }: { state: TokenPairState | undefined, balance: Map<string, bigint> }) {
   if (state === undefined) {
     return null
   }

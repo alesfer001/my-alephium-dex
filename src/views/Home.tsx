@@ -96,24 +96,6 @@ function Home() {
               </Link>
               <Link
                 component={NavLink}
-                to="/add-liquidity"
-                color="inherit"
-                className={classes.link}
-                onClick={() => { dispatch(resetMintState()) }}
-              >
-                Add Liquidity
-              </Link>
-              <Link
-                component={NavLink}
-                to="/remove-liquidity"
-                color="inherit"
-                className={classes.link}
-                onClick={() => { dispatch(resetMintState()) }}
-              >
-                Remove Liquidity
-              </Link>
-              <Link
-                component={NavLink}
                 to="/pool"
                 color="inherit"
                 className={classes.link}
@@ -144,12 +126,6 @@ function Home() {
         </Route>
         <Route exact path="/swap">
           <Swap />
-        </Route>
-        <Route exact path="/add-liquidity">
-          <AddLiquidity />
-        </Route>
-        <Route exact path="/remove-liquidity">
-          <RemoveLiquidity />
         </Route>
         <Route exact path="/pool">
           <Pool />

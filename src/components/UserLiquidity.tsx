@@ -48,11 +48,11 @@ function UserLiquidity() {
   }, [tokenPairState, balance]);
 
   if (showAddLiquidity) {
-    return <AddLiquidity />;
+    // return <AddLiquidity />;
   }
 
   if (showRemoveLiquidity) {
-    return <RemoveLiquidity />;
+    // return <RemoveLiquidity />;
   }
 
   return (

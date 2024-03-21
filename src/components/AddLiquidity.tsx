@@ -21,7 +21,7 @@ import { DetailItem } from "./DetailsItem";
 import { AlephiumConnectButton, useWallet } from "@alephium/web3-react";
 import { COLORS } from "../muiTheme";
 
-function AddLiquidity() {
+function AddLiquidity({ goBack, tokenInfos }) {
   const classes = commonStyles();
   const [txId, setTxId] = useState<string | undefined>(undefined)
   const [addingLiquidity, setAddingLiquidity] = useState<boolean>(false)
@@ -34,6 +34,9 @@ function AddLiquidity() {
   const { balance, updateBalanceForTx } = useAvailableBalances()
   const history = useHistory()
 
+  const [tokenAInfo, setTokenAInfo] = useState(tokenInfos.token0Info);
+  const [tokenBInfo, setTokenBInfo] = useState(tokenInfos.token1Info);
+
   const handleTokenAChange = useCallback((tokenInfo) => {
     dispatch(selectTokenA(tokenInfo))
   }, [dispatch]);
@@ -42,7 +45,7 @@ function AddLiquidity() {
     dispatch(selectTokenB(tokenInfo))
   }, [dispatch]);
 
-  const { tokenAInfo, tokenBInfo } = useSelector(selectMintState)
+  // const { tokenAInfo, tokenBInfo } = useSelector(selectMintState)
   const { tokenAInput, tokenBInput, tokenAAmount, tokenBAmount, tokenPairState, addLiquidityDetails } = useDerivedMintInfo(setError)
 
   const handleTokenAAmountChange = useCallback((event) => {
@@ -120,14 +123,15 @@ function AddLiquidity() {
           counterpart={tokenBInfo?.id}
           onChange={handleTokenAChange}
           tokenBalances={balance}
+          disabled={true}
         />
       </div>
       <Typography className={classes.balance}>
         {tokenABalance ? (<Button className={classes.maxButton}
-                                   onClick={handleMaxAButtonClick}
-                           >
-          <svg fill={COLORS.blue} height="24px" width="24px" style={{marginRight: '8px', marginBottom: '4px'}} version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
-               viewBox="0 0 458.531 458.531" xmlSpace="preserve">
+          onClick={handleMaxAButtonClick}
+        >
+          <svg fill={COLORS.blue} height="24px" width="24px" style={{ marginRight: '8px', marginBottom: '4px' }} version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
+            viewBox="0 0 458.531 458.531" xmlSpace="preserve">
             <g id="XMLID_830_">
               <g>
                 <g>
@@ -139,7 +143,7 @@ function AddLiquidity() {
                            c9.948,0,18.013-8.064,18.013-18.013v-66.176C458.531,227.989,450.466,219.925,440.518,219.925z M372.466,297.024
                            c-14.359,0-25.999-11.64-25.999-25.999s11.64-25.999,25.999-25.999c14.359,0,25.999,11.64,25.999,25.999
                            C398.465,285.384,386.825,297.024,372.466,297.024z"/>
-                  <path d="M358.169,45.209c-6.874-20.806-29.313-32.1-50.118-25.226L151.958,71.552h214.914L358.169,45.209z"/>
+                  <path d="M358.169,45.209c-6.874-20.806-29.313-32.1-50.118-25.226L151.958,71.552h214.914L358.169,45.209z" />
                 </g>
               </g>
             </g>
@@ -166,32 +170,33 @@ function AddLiquidity() {
           counterpart={tokenAInfo?.id}
           onChange={handleTokenBChange}
           tokenBalances={balance}
+          disabled={true}
         />
       </div>
       <Typography className={classes.balance}>
         {tokenBBalance ?
-         (<Button className={classes.walletDisplay}
+          (<Button className={classes.walletDisplay}
           >
-           <svg fill={COLORS.white} height="24px" width="24px" style={{marginRight: '8px', marginBottom: '4px'}} version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
-                viewBox="0 0 458.531 458.531" xmlSpace="preserve">
-             <g id="XMLID_830_">
-               <g>
-                 <g>
-                   <path d="M336.688,343.962L336.688,343.962c-21.972-0.001-39.848-17.876-39.848-39.848v-66.176
+            <svg fill={COLORS.white} height="24px" width="24px" style={{ marginRight: '8px', marginBottom: '4px' }} version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
+              viewBox="0 0 458.531 458.531" xmlSpace="preserve">
+              <g id="XMLID_830_">
+                <g>
+                  <g>
+                    <path d="M336.688,343.962L336.688,343.962c-21.972-0.001-39.848-17.876-39.848-39.848v-66.176
                             c0-21.972,17.876-39.847,39.848-39.847h103.83c0.629,0,1.254,0.019,1.876,0.047v-65.922c0-16.969-13.756-30.725-30.725-30.725
                             H30.726C13.756,101.49,0,115.246,0,132.215v277.621c0,16.969,13.756,30.726,30.726,30.726h380.943
                             c16.969,0,30.725-13.756,30.725-30.726v-65.922c-0.622,0.029-1.247,0.048-1.876,0.048H336.688z"/>
-                   <path d="M440.518,219.925h-103.83c-9.948,0-18.013,8.065-18.013,18.013v66.176c0,9.948,8.065,18.013,18.013,18.013h103.83
+                    <path d="M440.518,219.925h-103.83c-9.948,0-18.013,8.065-18.013,18.013v66.176c0,9.948,8.065,18.013,18.013,18.013h103.83
                             c9.948,0,18.013-8.064,18.013-18.013v-66.176C458.531,227.989,450.466,219.925,440.518,219.925z M372.466,297.024
                             c-14.359,0-25.999-11.64-25.999-25.999s11.64-25.999,25.999-25.999c14.359,0,25.999,11.64,25.999,25.999
                             C398.465,285.384,386.825,297.024,372.466,297.024z"/>
-                   <path d="M358.169,45.209c-6.874-20.806-29.313-32.1-50.118-25.226L151.958,71.552h214.914L358.169,45.209z"/>
-                 </g>
-               </g>
-             </g>
-           </svg>
-           {tokenBBalance}</Button>)
-        : " "}
+                    <path d="M358.169,45.209c-6.874-20.806-29.313-32.1-50.118-25.226L151.958,71.552h214.914L358.169,45.209z" />
+                  </g>
+                </g>
+              </g>
+            </svg>
+            {tokenBBalance}</Button>)
+          : " "}
       </Typography>
     </div>
   );
@@ -246,7 +251,7 @@ function AddLiquidity() {
     tokenBInfo !== undefined &&
     tokenAAmount !== undefined &&
     tokenBAmount !== undefined &&
-    !addingLiquidity && !completed && 
+    !addingLiquidity && !completed &&
     error === undefined
   const addLiquidityButton = (
     <ButtonWithLoader
@@ -269,12 +274,15 @@ function AddLiquidity() {
 
   return (
     <Container className={classes.centeredContainer} maxWidth="sm">
-      {/* <Box display="flex" justifyContent="center" alignItems="center" width="100%" position="relative">
-          <Typography variant="h5" color="textSecondary" className={classes.centerTitle}>
+      <Box display="flex" justifyContent="center" alignItems="center" width="100%" position="relative">
+        <IconButton onClick={goBack} className={classes.backButton}>
+          <ArrowBack />
+        </IconButton>
+        <Typography variant="h5" color="textSecondary" className={classes.centerTitle}>
           Add Liquidity
-          </Typography>
-          <div></div>
-          </Box> */}
+        </Typography>
+        <div></div>
+      </Box>
       <div className={classes.spacer} />
       <Paper className={classes.mainPaper}>
         <WaitingForTxSubmission
@@ -312,15 +320,15 @@ function AddLiquidity() {
   );
 }
 
-function AddLiquidityDetailsCard({ details, slippage } : { details: AddLiquidityDetails | undefined, slippage: number }) {
+function AddLiquidityDetailsCard({ details, slippage }: { details: AddLiquidityDetails | undefined, slippage: number }) {
   if (details === undefined) {
     return null
   }
 
   const { state, tokenAId, shareAmount, sharePercentage, amountA, amountB } = details
   const [tokenA, tokenB] = tokenAId === state.token0Info.id
-      ? [{ info: state.token0Info, amount: amountA }, { info: state.token1Info, amount: amountB }]
-      : [{ info: state.token1Info, amount: amountA }, { info: state.token0Info, amount: amountB }]
+    ? [{ info: state.token0Info, amount: amountA }, { info: state.token1Info, amount: amountB }]
+    : [{ info: state.token1Info, amount: amountA }, { info: state.token0Info, amount: amountB }]
   return <Card variant='outlined' style={{ width: '100%', padding: '0', borderRadius: '10px' }}>
     <div style={{ display: 'grid', gridAutoRows: 'auto', gridRowGap: '5px', paddingTop: '10px', paddingBottom: '10px' }}>
       <DetailItem
