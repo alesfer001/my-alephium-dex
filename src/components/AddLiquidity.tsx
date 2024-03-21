@@ -69,6 +69,14 @@ function AddLiquidity({ goBack, tokenInfos }) {
     history.push('/swap')
   }, [history])
 
+  const redirectToPool = useCallback(() => {
+    dispatch(reset())
+    setTxId(undefined)
+    setAddingLiquidity(false)
+    setError(undefined)
+    goBack()
+  }, [])
+
   const tokenABalance = useMemo(() => {
     return tryGetBalance(balance, tokenAInfo)
   }, [balance, tokenAInfo])
@@ -276,7 +284,7 @@ function AddLiquidity({ goBack, tokenInfos }) {
   return (
     <Container className={classes.centeredContainer} maxWidth="sm">
       <Box display="flex" justifyContent="center" alignItems="center" width="100%" position="relative">
-        <IconButton onClick={goBack} className={classes.backButton}>
+        <IconButton onClick={redirectToPool} className={classes.backButton}>
           <ArrowBack />
         </IconButton>
         <Typography variant="h5" color="textSecondary" className={classes.centerTitle}>

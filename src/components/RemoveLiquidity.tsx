@@ -133,6 +133,19 @@ function RemoveLiquidity({ goBack, tokenInfos }) {
     history.push('/swap')
   }, [history])
 
+  const redirectToPool = useCallback(() => {
+    setTokenAInfo(undefined)
+    setTokenBInfo(undefined)
+    setAmount(undefined)
+    setAmountInput(undefined)
+    setTotalLiquidityAmount(undefined)
+    setTxId(undefined)
+    setRemovingLiquidity(false)
+    setRemoveLiquidityDetails(undefined)
+    setError(undefined)
+    goBack()
+  }, [])
+
   const tokenPairContent = (
     <div className={classes.tokenPairContainer}>
       <TokenSelectDialog
@@ -275,7 +288,7 @@ function RemoveLiquidity({ goBack, tokenInfos }) {
   return (
     <Container className={classes.centeredContainer} maxWidth="sm">
       <Box display="flex" justifyContent="center" alignItems="center" width="100%" position="relative">
-        <IconButton onClick={goBack} className={classes.backButton}>
+        <IconButton onClick={redirectToPool} className={classes.backButton}>
           <ArrowBack />
         </IconButton>
         <Typography variant="h5" color="textSecondary" className={classes.centerTitle}>
