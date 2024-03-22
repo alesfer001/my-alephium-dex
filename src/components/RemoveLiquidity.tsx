@@ -47,6 +47,18 @@ function RemoveLiquidity({ goBack, tokenInfos }) {
   const [tokenAInfo, setTokenAInfo] = useState(tokenInfos.token0Info);
   const [tokenBInfo, setTokenBInfo] = useState(tokenInfos.token1Info);
 
+  const quickSelectOptions = [25, 50, 75, 100];
+
+  const handleQuickSelect = (percentage) => {
+    if (totalLiquidityAmount) {
+      const selectedAmount = totalLiquidityAmount * BigInt(percentage) / BigInt(100);
+      setAmount(selectedAmount);
+      const roundedAmountInput = parseFloat(formatUnits(selectedAmount, PairTokenDecimals)).toFixed(2); // Adjust the precision as needed
+      setAmountInput(roundedAmountInput);
+    }
+  };
+
+
   const handleTokenAChange = useCallback((tokenInfo) => {
     setTokenAInfo(tokenInfo);
   }, []);
@@ -111,7 +123,8 @@ function RemoveLiquidity({ goBack, tokenInfos }) {
       return
     }
     let amount = formatUnits(totalLiquidityAmount, PairTokenDecimals)
-    setAmountInput(amount)
+    const roundedAmountInput = parseFloat(amount).toFixed(2); // Adjust the precision as needed
+    setAmountInput(roundedAmountInput);
     try {
       setAmount(stringToBigInt(amount, PairTokenDecimals))
     } catch (error) {
@@ -202,7 +215,7 @@ function RemoveLiquidity({ goBack, tokenInfos }) {
               </g>
             </g>
           </svg>
-          {formatUnits(totalLiquidityAmount, PairTokenDecimals)}
+          {bigIntToString(totalLiquidityAmount, PairTokenDecimals)}
         </Button>) : " "}
       </Typography>
       {/* <Button
@@ -318,10 +331,17 @@ function RemoveLiquidity({ goBack, tokenInfos }) {
                   <>
                     <div className={classes.notification}>
                       <p className={classes.leftAlign}>Total share amount:</p>
-                      <p className={classes.rightAlign}>{formatUnits(totalLiquidityAmount, PairTokenDecimals)}</p>
+                      <p className={classes.rightAlign}>{bigIntToString(totalLiquidityAmount, PairTokenDecimals)}</p>
                     </div>
                   </>
                 ) : null}
+                <div>
+                  {quickSelectOptions.map((option) => (
+                    <Button key={option} onClick={() => handleQuickSelect(option)}>
+                      {option}%
+                    </Button>
+                  ))}
+                </div>
                 {amountInputBox}
                 <>
                   <div className={classes.spacer} />
